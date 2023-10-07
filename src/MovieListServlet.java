@@ -103,7 +103,7 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("star_ids", starIdsString);
 
                 jsonArray.add(jsonObject);
-
+                starsStatement.close();
                 if (resultSet.isLast()) {
                     starsResultSet.close();
                 }
