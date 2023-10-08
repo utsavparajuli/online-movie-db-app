@@ -45,7 +45,8 @@ function handleResult(resultData) {
     console.log("handleResult: populating movie info from resultData");
 
     var count = Object.keys(resultData).length;
-    console.log(count);
+    // console.log(count);
+    // console.log(resultData);
 
     // populate the star info h3
     // find the empty h3 body by id "star_info"
@@ -66,18 +67,16 @@ function handleResult(resultData) {
     let starTableBodyElement = jQuery("#star_table_body");
 
     // Concatenate the html tags with resultData jsonObject to create table rows
-    for (let i = 0; i < resultData.length; i++) {
+    for (let i = 1; i < resultData.length; i++) {
         let rowHTML = "";
         rowHTML += "<tr>";
         rowHTML += "<th>"
-            + '<a href="single-star.html?id=' + resultData[i]["movie_id"] + '">'
-            + resultData[i]["movie_title"] + '</a>' + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_year"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["movie_director"] + "</th>";
+            + '<a href="single-star.html?id=' + resultData[i]["actor_id"] + '">'
+            + resultData[i]["actor_name"] + '</a>' + "</th>";
         rowHTML += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
+        starTableBodyElement.append(rowHTML);
     }
 }
 

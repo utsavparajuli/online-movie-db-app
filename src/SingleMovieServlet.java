@@ -14,6 +14,9 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 // Declaring a WebServlet called SingleMovieServlet, which maps to url "/api/single-movie"
 @WebServlet(name = "SingleMovieServlet", urlPatterns = "/api/single-movie")
@@ -92,6 +95,35 @@ public class SingleMovieServlet extends HttpServlet {
                 String rating = rs.getString("rating");
 
 
+                Statement statementStars = conn.createStatement();
+
+
+                String query2 =  "SELECT s.name, s.id " +
+                        "FROM   Stars_in_movies as sm, Stars as s " +
+                        "WHERE  sm.movieID = '" + movieId + "' AND sm.starId = s.id";
+
+
+                ResultSet rs2 = statementStars.executeQuery(query2);
+
+
+//                System.out.println("Here 2");
+
+                int counter = 0;
+                JsonArray actors = new JsonArray();
+
+
+                while (rs2.next()) {
+                    JsonObject jsonObjectActors = new JsonObject();
+                    jsonObjectActors.addProperty("actor_id", rs2.getString("id"));
+                    jsonObjectActors.addProperty("actor_name", rs2.getString("name"));
+
+                    actors.add(jsonObjectActors);
+
+                }
+
+                rs2.close();
+                statementStars.close();
+
                 // Create a JsonObject based on the data we retrieve from rs
 
                 JsonObject jsonObject = new JsonObject();
@@ -104,8 +136,10 @@ public class SingleMovieServlet extends HttpServlet {
                 jsonObject.addProperty("movie_director", movieDirector);
                 jsonObject.addProperty("movie_genres", genres);
                 jsonObject.addProperty("movie_rating", rating);
+                
 
                 jsonArray.add(jsonObject);
+                jsonArray.addAll(actors);
             }
             rs.close();
             statement.close();
