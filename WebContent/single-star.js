@@ -28,7 +28,9 @@ function getParameterByName(target) {
     if (!results[2]) return '';
 
     // Return the decoded parameter value
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+    let idResponse = decodeURIComponent(results[2].replace(/\+/g, " "));
+    console.log(idResponse);
+    return idResponse;
 }
 
 /**
