@@ -99,7 +99,7 @@ public class SingleMovieServlet extends HttpServlet {
 
 
                 String query2 =  "SELECT s.name, s.id " +
-                        "FROM   Stars_in_movies as sm, Stars as s " +
+                        "FROM   stars_in_movies as sm, stars as s " +
                         "WHERE  sm.movieID = '" + movieId + "' AND sm.starId = s.id";
 
 
