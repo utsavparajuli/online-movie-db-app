@@ -1,0 +1,15 @@
+html {
+    scroll-behavior: smooth;
+}
+
+.h1-title {
+    text-align: center;
+}
+
+.padding-header {
+    padding-top: 10px;
+}
+
+.home-image {
+    align-content: center;
+}
