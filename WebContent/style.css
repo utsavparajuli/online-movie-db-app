@@ -4,6 +4,7 @@ html {
 
 body {
     font-family: Roboto, sans-serif;
+    padding: 15px;
 }
 
 .h1-title {
@@ -17,6 +18,11 @@ body {
 .home-image {
     align-content: center;
     width: 80%;
+    background-color: white;
+}
+
+.home-image img:hover {
+    opacity: 0.5;
 }
 
 .table-striped {
