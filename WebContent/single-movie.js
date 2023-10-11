@@ -53,14 +53,22 @@ function handleResult(resultData) {
     let movieInfoElement = jQuery("#movie_info");
 
     // append two html <p> created to the h3 body, which will refresh the page
-    movieInfoElement.append("<div align='center'><p><b>" + resultData[0]["movie_title"] + "</b></p><br><br>" +
-                            "<p>Relase Year: " + resultData[0]["movie_year"] + "</p>" +
-                            "<p>Director: " + resultData[0]["movie_director"] + "</p>" +
-                            "<p>Rating: " + resultData[0]["movie_rating"] + "</p>" +
-                            "<p>Genres: " + resultData[0]["movie_genres"] + "</p></div>"
+    movieInfoElement.append("<div align='center'><h1><b>" + resultData[0]["movie_title"] + "</b></h1><i> (" + resultData[0]["movie_year"] + ")</i><br><br>"
+                            // "<p>Director: " + resultData[0]["movie_director"] + "</p>" +
+                            // "<p>Rating: " + resultData[0]["movie_rating"] + "</p>" +
+                            // "<p>Genres: " + resultData[0]["movie_genres"] + "</p></div>"
     );
 
-    console.log("handleResult: populating movie table from resultData");
+    let movieSubInfoElement = jQuery("#movie_sub_info");
+
+    let sub_info = "";
+    sub_info += "<tr>";
+    sub_info += "<th>" + resultData[0]["movie_director"] + "</th>";
+    sub_info += "<th>" + resultData[0]["movie_rating"] + "</th>";
+    sub_info += "<th>" + resultData[0]["movie_genres"] + "</th>";
+
+    movieSubInfoElement.append(sub_info)
+    console.log("handleResult: populating movie table from resultData - updated");
 
     // Populate the star table
     // Find the empty table body by id "movie_table_body"

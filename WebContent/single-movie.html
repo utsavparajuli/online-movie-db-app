@@ -30,7 +30,7 @@
 <body>
 <div class="home-image">
   <a href="index.html">
-    <img src="homepage.png" alt="Homepage" style="width:40px;height:40px;">
+    <img src="homepage.png" alt="Homepage" style="width:30px;height:30px;">
   </a>
 </div>
 <!--<h1 align="center">Single Movie</h1>-->
@@ -43,6 +43,22 @@
 <h3 id="movie_info"></h3>
 <br>
 <!--<h3 align="center">Stars</h3>-->
+
+<table id=movie_table_info class="table table-striped align-content-center">
+  <!-- Create a table header -->
+  <thead>
+  <tr>
+    <!-- Titles of each column-->
+    <th>Director</th>
+    <th>Rating</th>
+    <th>Genres</th>
+  </tr>
+  </thead>
+  <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
+  <!-- Again, id "star_table_body" is useful for jQuery to find this html element -->
+  <tbody class="align-content-center" id=movie_sub_info></tbody>
+</table>
+
 <table align="center" id=actor_table class="table table-striped">
   <thead>
   <tr>
