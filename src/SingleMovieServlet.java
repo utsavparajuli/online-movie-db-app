@@ -57,11 +57,7 @@ public class SingleMovieServlet extends HttpServlet {
         try (Connection conn = dataSource.getConnection()) {
             // Get a connection from dataSource
 
-            // Construct a query with parameter represented by "?"
-//            String query = "SELECT GROUP_CONCAT(DISTINCT G.name SEPARATOR ', ') AS genres" +
-//                    "from movies as m " +
-//                    "where m.id = ?";
-
+            // Construct a query with parameter represented by "?". Gets the movie details based on the '?'
             String query = "SELECT M.id, M.title, M.year, M.director, GROUP_CONCAT(DISTINCT G.name SEPARATOR ', ') AS genres, R.rating " +
                     "FROM movies M, ratings R, genres G, genres_in_movies GiM " +
                     "WHERE M.id =? and R.movieId = M.id AND GiM.genreId = G.id AND GiM.movieId = M.id " +
@@ -78,15 +74,11 @@ public class SingleMovieServlet extends HttpServlet {
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
+            // Return array
             JsonArray jsonArray = new JsonArray();
 
             // Iterate through each row of rs
             while (rs.next()) {
-
-//                String starId = rs.getString("starId");
-//                String starName = rs.getString("name");
-//                String starDob = rs.getString("birthYear");
-
                 String movieId = rs.getString("id");
                 String movieTitle = rs.getString("title");
                 String movieYear = rs.getString("year");
@@ -94,49 +86,38 @@ public class SingleMovieServlet extends HttpServlet {
                 String genres = rs.getString("genres");
                 String rating = rs.getString("rating");
 
-
                 Statement statementStars = conn.createStatement();
 
-
+                // Selecting stars for a particular movie
                 String query2 =  "SELECT s.name, s.id " +
                         "FROM   stars_in_movies as sm, stars as s " +
                         "WHERE  sm.movieID = '" + movieId + "' AND sm.starId = s.id";
 
 
                 ResultSet rs2 = statementStars.executeQuery(query2);
-
-
-//                System.out.println("Here 2");
-
-                int counter = 0;
                 JsonArray actors = new JsonArray();
 
-
+                // Populating the actors array
                 while (rs2.next()) {
                     JsonObject jsonObjectActors = new JsonObject();
                     jsonObjectActors.addProperty("actor_id", rs2.getString("id"));
                     jsonObjectActors.addProperty("actor_name", rs2.getString("name"));
 
                     actors.add(jsonObjectActors);
-
                 }
 
                 rs2.close();
                 statementStars.close();
 
                 // Create a JsonObject based on the data we retrieve from rs
-
                 JsonObject jsonObject = new JsonObject();
-//                jsonObject.addProperty("star_id", starId);
-//                jsonObject.addProperty("star_name", starName);
-//                jsonObject.addProperty("star_dob", starDob);
+
                 jsonObject.addProperty("movie_id", movieId);
                 jsonObject.addProperty("movie_title", movieTitle);
                 jsonObject.addProperty("movie_year", movieYear);
                 jsonObject.addProperty("movie_director", movieDirector);
                 jsonObject.addProperty("movie_genres", genres);
                 jsonObject.addProperty("movie_rating", rating);
-                
 
                 jsonArray.add(jsonObject);
                 jsonArray.addAll(actors);
@@ -164,7 +145,6 @@ public class SingleMovieServlet extends HttpServlet {
         }
 
         // Always remember to close db connection after usage. Here it's done by try-with-resources
-
     }
 
 }
