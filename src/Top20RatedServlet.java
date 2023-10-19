@@ -19,7 +19,7 @@ import java.sql.Statement;
 
 // Declaring a WebServlet called StarsServlet, which maps to url "/api/movielist"
 @WebServlet(name = "MovieListServlet", urlPatterns = "/api/movielist")
-public class MovieListServlet extends HttpServlet {
+public class Top20RatedServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     // Create a dataSource which registered in web.
@@ -88,19 +88,22 @@ public class MovieListServlet extends HttpServlet {
 
                 ResultSet starsResultSet = starsStatement.executeQuery();
 
-                JsonObject starObject = new JsonObject();
+                StringBuilder starNames = new StringBuilder();
+                StringBuilder starIds = new StringBuilder();
 
-                // Create another jsonObject holding all stars and ids
-                int count = 0;
                 while (starsResultSet.next()) {
-                    JsonObject singleStarObject = new JsonObject();
-                    singleStarObject.addProperty("id", starsResultSet.getString("id"));
-                    singleStarObject.addProperty("name", starsResultSet.getString("name"));
-                    starObject.add(Integer.toString(count), singleStarObject);
-                    count += 1;
+                    starNames.append(starsResultSet.getString("name")).append(", ");
+                    starIds.append(starsResultSet.getString("id")).append(", ");
                 }
+                String starNamesString = starNames.toString();
+                String starIdsString = starIds.toString();
+                starNamesString = starNamesString.replace(", $", "");
+                starIdsString = starIdsString.replace(", $", "");
 
-                jsonObject.add("stars", starObject);
+
+                jsonObject.addProperty("star_names", starNamesString);
+                jsonObject.addProperty("star_ids", starIdsString);
+
                 jsonArray.add(jsonObject);
                 starsStatement.close();
                 if (resultSet.isLast()) {
