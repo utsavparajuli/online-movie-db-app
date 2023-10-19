@@ -33,7 +33,75 @@
 <body>
     <h1 class="h1-title padding-header">Fabflix - BETA</h1>
     <br>
-    <a href="movie-list.html">Top 20 Movie List</a>
+    <a href="movie-list.html">Movie List</a>
+
+    <br>
+    <br>
+
+    <!--                                SEARCH COMPONENT                    -->
+    <h2>Search</h2>
+
+    <div style="display: inline-block">
+        <form id="search_form" method="get" action="#">
+            <label><b>Title</b></label>
+            <label>
+                <input name="movie_title" placeholder="Movie Title" type="text">
+            </label>
+            <br>
+            <label><b>Year</b></label>
+            <label>
+                <input name="movie_year" placeholder="Release Year" type="number" maxlength="4" minlength="4">
+            </label>
+            <br>
+            <label><b>Director</b></label>
+            <label>
+                <input name="movie_director" placeholder="Director Name" type="text" >
+            </label>
+            <br>
+            <label><b>Star</b></label>
+            <label>
+                <input name="movie_star" placeholder="Star Name" type="text" >
+            </label>
+            <br>
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    <br>
+    <br>
+
+    <!--                                SEARCH COMPONENT   END                 -->
+
+    <!--
+                                  BROWSE COMPONENT   BEGIN - ALPHABETICAL                 -->
+    <div>
+        <h2>BROWSE - ALPHABETICAL</h2>
+
+        <div class="grid-container" id="alphabetical_list"></div>
+    </div>
+
+    <br>
+    <br>
+
+
+
+
+    <h2>BROWSE - GENRE</h2>
+    <!-- Id "star_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
+    <table id=genre_table class="table table-striped align-content-center">
+        <!-- Create a table header -->
+        <thead>
+        <tr>
+            <!-- Titles of each column-->
+            <th>Genre</th>
+        </tr>
+        </thead>
+        <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
+        <!-- Again, id "star_table_body" is useful for jQuery to find this html element -->
+        <tbody id=genre_list_table_body></tbody>
+    </table>
+    <br>
+    <br>
+
 
     <!-- Load jQuery and Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

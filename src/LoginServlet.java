@@ -52,6 +52,7 @@ public class LoginServlet extends HttpServlet {
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
+            // TODO: check if it is null
             if (rs.next()) {
                 // set this user into the session
                 request.getSession().setAttribute("user", new User(username));
