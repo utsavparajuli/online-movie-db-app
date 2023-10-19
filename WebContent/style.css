@@ -7,6 +7,10 @@ body {
     padding: 15px;
 }
 
+/*Login Page Styling BEGIN*/
+
+/*Login Page Styling END*/
+
 .h1-title {
     text-align: center;
     font-weight: 700;
@@ -52,6 +56,20 @@ body {
     font-size: 1.2em;
     background-color: rgb(248, 161, 69);
     color: white;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto auto;
+    background-color: #2196F3;
+    padding: 5px;
+}
+.grid-item {
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
 }
 
 a:link {

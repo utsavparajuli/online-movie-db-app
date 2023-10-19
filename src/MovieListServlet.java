@@ -49,6 +49,7 @@ public class MovieListServlet extends HttpServlet {
             // Declare our statement
             Statement statement = conn.createStatement();
 
+            // Query that selects the top 20 movies by rating
             String query = "SELECT M.id, M.title, M.year, M.director, " +
                     "GROUP_CONCAT(DISTINCT G.name SEPARATOR ', ') AS genres, R.rating " +
                     "FROM movies M, ratings R, genres G, genres_in_movies GiM " +
@@ -77,6 +78,7 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("genres", resultSet.getString("genres"));
                 jsonObject.addProperty("rating", resultSet.getString("rating"));
 
+                // Getting the stars for a particular movie
                 String starsQuery = "SELECT S.id, S.name " +
                         "FROM stars S, stars_in_movies SiM " +
                         "WHERE S.id = SiM.starId AND SiM.movieId = ? " +
@@ -135,6 +137,5 @@ public class MovieListServlet extends HttpServlet {
         }
 
         // Always remember to close db connection after usage. Here it's done by try-with-resources
-
     }
 }
