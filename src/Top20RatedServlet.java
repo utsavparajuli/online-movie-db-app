@@ -18,7 +18,7 @@ import java.sql.Statement;
 
 
 // Declaring a WebServlet called StarsServlet, which maps to url "/api/movielist"
-@WebServlet(name = "MovieListServlet", urlPatterns = "/api/movielist")
+@WebServlet(name = "MovieListServlet", urlPatterns = "/api/top20rated")
 public class Top20RatedServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -65,7 +65,6 @@ public class Top20RatedServlet extends HttpServlet {
 
             // Iterate through each row of resultSet
             while (resultSet.next()) {
-                // save movie_id for further mysql queries in stars and genres
                 String movie_id = resultSet.getString("id");
 
                 // Create a JsonObject based on the data we retrieve from resultSet
@@ -88,21 +87,19 @@ public class Top20RatedServlet extends HttpServlet {
 
                 ResultSet starsResultSet = starsStatement.executeQuery();
 
-                StringBuilder starNames = new StringBuilder();
-                StringBuilder starIds = new StringBuilder();
+                JsonObject starObject = new JsonObject();
 
+                // Create another jsonObject holding all stars and ids
+                int count = 0;
                 while (starsResultSet.next()) {
-                    starNames.append(starsResultSet.getString("name")).append(", ");
-                    starIds.append(starsResultSet.getString("id")).append(", ");
+                    JsonObject singleStarObject = new JsonObject();
+                    singleStarObject.addProperty("id", starsResultSet.getString("id"));
+                    singleStarObject.addProperty("name", starsResultSet.getString("name"));
+                    starObject.add(Integer.toString(count), singleStarObject);
+                    count += 1;
                 }
-                String starNamesString = starNames.toString();
-                String starIdsString = starIds.toString();
-                starNamesString = starNamesString.replace(", $", "");
-                starIdsString = starIdsString.replace(", $", "");
 
-
-                jsonObject.addProperty("star_names", starNamesString);
-                jsonObject.addProperty("star_ids", starIdsString);
+                jsonObject.add("stars", starObject);
 
                 jsonArray.add(jsonObject);
                 starsStatement.close();
@@ -113,7 +110,6 @@ public class Top20RatedServlet extends HttpServlet {
 
             resultSet .close();
             statement.close();
-
 
             // Log to localhost log
             request.getServletContext().log("getting " + jsonArray.size() + " results");
