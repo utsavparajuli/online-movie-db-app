@@ -67,13 +67,11 @@ public class MainPageServlet extends HttpServlet {
                 jsonObject.addProperty("genre_id", resultSet.getString("id"));
                 jsonObject.addProperty("genre_name", resultSet.getString("name"));
 
-
                 jsonArray.add(jsonObject);
             }
 
             resultSet .close();
             statement.close();
-
 
             // Log to localhost log
             request.getServletContext().log("getting " + jsonArray.size() + " results");
