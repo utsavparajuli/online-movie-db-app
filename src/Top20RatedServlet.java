@@ -17,8 +17,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 
-// Declaring a WebServlet called StarsServlet, which maps to url "/api/movielist"
-@WebServlet(name = "MovieListServlet", urlPatterns = "/api/top20rated")
+// Declaring a WebServlet called StarsServlet, which maps to url "/api/top20rated"
+@WebServlet(name = "Top20RatedServlet", urlPatterns = "/api/top20rated")
 public class Top20RatedServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -50,12 +50,11 @@ public class Top20RatedServlet extends HttpServlet {
             Statement statement = conn.createStatement();
 
             // Query that selects the top 20 movies by rating
-            String query = "SELECT M.id, M.title, M.year, M.director, " +
-                    "GROUP_CONCAT(DISTINCT G.name SEPARATOR ', ') AS genres, R.rating " +
-                    "FROM movies M, ratings R, genres G, genres_in_movies GiM " +
-                    "WHERE R.movieId = M.id AND M.id = GiM.movieId AND GiM.genreId = G.id " +
-                    "GROUP BY M.id, R.rating " +
-                    "ORDER BY R.rating DESC " +
+            String query = "SELECT m.id, m.title, m.year, m.director, r.rating " +
+                    "FROM movies m, ratings r " +
+                    "WHERE r.movieId = m.id " +
+                    "GROUP BY m.id, r.rating " +
+                    "ORDER BY r.rating DESC " +
                     "LIMIT 20;";
 
             // Perform the query
@@ -65,16 +64,15 @@ public class Top20RatedServlet extends HttpServlet {
 
             // Iterate through each row of resultSet
             while (resultSet.next()) {
-                String movie_id = resultSet.getString("id");
+                String movieId = resultSet.getString("id");
 
                 // Create a JsonObject based on the data we retrieve from resultSet
                 JsonObject jsonObject = new JsonObject();
 
-                jsonObject.addProperty("movie_id", movie_id);
+                jsonObject.addProperty("movie_id", movieId);
                 jsonObject.addProperty("movie_title", resultSet.getString("title"));
                 jsonObject.addProperty("year", resultSet.getString("year"));
                 jsonObject.addProperty("director", resultSet.getString("director"));
-                jsonObject.addProperty("genres", resultSet.getString("genres"));
                 jsonObject.addProperty("rating", resultSet.getString("rating"));
 
                 // Getting the stars for a particular movie
@@ -82,11 +80,10 @@ public class Top20RatedServlet extends HttpServlet {
                         "FROM stars S, stars_in_movies SiM " +
                         "WHERE S.id = SiM.starId AND SiM.movieId = ? " +
                         "LIMIT 3;";
-                PreparedStatement starsStatement = conn.prepareStatement(starsQuery);
-                starsStatement.setString(1, movie_id);
 
-                ResultSet starsResultSet = starsStatement.executeQuery();
-
+                PreparedStatement prepStatement = conn.prepareStatement(starsQuery);
+                prepStatement.setString(1, movieId);
+                ResultSet starsResultSet = prepStatement.executeQuery();
                 JsonObject starObject = new JsonObject();
 
                 // Create another jsonObject holding all stars and ids
@@ -99,12 +96,34 @@ public class Top20RatedServlet extends HttpServlet {
                     count += 1;
                 }
 
-                jsonObject.add("stars", starObject);
+                String genreQuery = "SELECT g.name, g.id " +
+                        "FROM genres g, genres_in_movies gim " +
+                        "WHERE g.id = gim.genreID AND gim.movieId = ? " +
+                        "ORDER BY g.name " +
+                        "LIMIT 3;";
 
+                prepStatement = conn.prepareStatement(genreQuery);
+                prepStatement.setString(1, movieId);
+                ResultSet genreResultSet = prepStatement.executeQuery();
+                JsonObject genreObject = new JsonObject();
+
+                count = 0;
+                while (genreResultSet.next()) {
+                    JsonObject singleGenreObject = new JsonObject();
+                    singleGenreObject.addProperty("id", genreResultSet.getString("id"));
+                    singleGenreObject.addProperty("name", genreResultSet.getString("name"));
+                    genreObject.add(Integer.toString(count), singleGenreObject);
+                    count += 1;
+                }
+
+                jsonObject.add("stars", starObject);
+                jsonObject.add("genres", genreObject);
                 jsonArray.add(jsonObject);
-                starsStatement.close();
+
+                prepStatement.close();
                 if (resultSet.isLast()) {
                     starsResultSet.close();
+                    genreResultSet.close();
                 }
             }
 
