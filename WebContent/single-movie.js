@@ -43,6 +43,7 @@ function getParameterByName(target) {
 function handleResult(resultData) {
 
     console.log("handleResult: populating movie info from resultData");
+    console.log(resultData);
 
     var count = Object.keys(resultData).length;
     // console.log(count);
@@ -53,19 +54,29 @@ function handleResult(resultData) {
     let movieInfoElement = jQuery("#movie_info");
 
     // append two html <p> created to the h3 body, which will refresh the page
-    movieInfoElement.append("<div align='center'><h1><b>" + resultData[0]["movie_title"] + "</b></h1><i> (" + resultData[0]["movie_year"] + ")</i><br><br>"
-                            // "<p>Director: " + resultData[0]["movie_director"] + "</p>" +
-                            // "<p>Rating: " + resultData[0]["movie_rating"] + "</p>" +
-                            // "<p>Genres: " + resultData[0]["movie_genres"] + "</p></div>"
-    );
+    movieInfoElement.append("<div align='center'><h1><b>" + resultData[0]["title"] + "</b></h1><i> (" +
+        resultData[0]["year"] + ")</i><br><br>");
 
     let movieSubInfoElement = jQuery("#movie_sub_info");
 
-    let sub_info = "";
-    sub_info += "<tr>";
-    sub_info += "<th>" + resultData[0]["movie_director"] + "</th>";
-    sub_info += "<th>" + resultData[0]["movie_rating"] + "</th>";
-    sub_info += "<th>" + resultData[0]["movie_genres"] + "</th>";
+    let sub_info = "<tr>";
+    sub_info += "<th>" + resultData[0]["director"] + "</th>";
+    sub_info += "<th>" + resultData[0]["rating"] + "</th>";
+
+    sub_info += "<th>";
+    // add all genres and links to their pages
+    let genreNum = parseInt(resultData[0]["genre_num"]);
+    for (let i = 0; i < genreNum; i++) {
+        if (resultData[0]["genres"][i] !== undefined) {
+            sub_info += '<a href="movie-list.html?genre_id=' + resultData[0]["genres"][i]["id"] +
+                '">' + resultData[0]["genres"][i]["name"] + '</a>';
+
+            sub_info += ", ";
+        }
+    }
+    sub_info = sub_info.substring(0, sub_info.length - 2);
+    sub_info += "</th>";
+
 
     movieSubInfoElement.append(sub_info)
     console.log("handleResult: populating movie table from resultData - updated");
@@ -74,17 +85,17 @@ function handleResult(resultData) {
     // Find the empty table body by id "movie_table_body"
     let starTableBodyElement = jQuery("#star_table_body");
 
-    // Concatenate the html tags with resultData jsonObject to create table rows
-    for (let i = 1; i < resultData.length; i++) {
-        let rowHTML = "";
-        rowHTML += "<tr>";
-        rowHTML += "<th>"
-            + '<a href="single-star.html?id=' + resultData[i]["actor_id"] + '">'
-            + resultData[i]["actor_name"] + '</a>' + "</th>";
-        rowHTML += "</tr>";
+    let starNum = parseInt(resultData[0]["star_num"])
+    for (let i = 0; i < starNum; i++) {
+        let sub_info = "";
+        sub_info += "<tr>";
+        sub_info += "<th>"
+            + '<a href="single-star.html?id=' + resultData[0]["stars"][i]["id"] + '">'
+            + resultData[0]["stars"][i]["name"] + '</a>' + "</th>";
+        sub_info += "</tr>";
 
         // Append the row created to the table body, which will refresh the page
-        starTableBodyElement.append(rowHTML);
+        starTableBodyElement.append(sub_info);
     }
 }
 

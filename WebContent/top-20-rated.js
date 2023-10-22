@@ -4,6 +4,7 @@
  */
 function handleStarResult(resultData) {
     console.log("handleStarResult: populating star table from resultData");
+    console.log(resultData);
 
     // Populate the star table
     // Find the empty table body by id "star_table_body"
@@ -15,13 +16,23 @@ function handleStarResult(resultData) {
         rowHTML += "<th>" +
             // Add a link to single-movie.html with id passed with GET url parameter
             '<a href="single-movie.html?id=' + resultData[i]['movie_id'] + '">'
-            + resultData[i]["movie_title"] + '</a>' + "</th>";
+            + resultData[i]["movie_title"] + "</a></th>";
 
         rowHTML += "<th>" + resultData[i]["year"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["director"] + "</th>";
-        rowHTML += "<th>" + resultData[i]["genres"] + "</th>";
+        rowHTML += "<th>" + resultData[i]["director"] + "</th><th>";
 
-        rowHTML += "<th>";
+        // add all genres and links to their pages
+        for (let j = 0; j < 3; j++) {
+            if (resultData[i]["genres"][j] !== undefined) {
+                rowHTML += '<a href="movie-list.html?genre_id=' + resultData[i]["genres"][j]["id"] +
+                    '">' + resultData[i]["genres"][j]["name"] + '</a>';
+
+                rowHTML += ", ";
+            }
+        }
+        rowHTML = rowHTML.substring(0, rowHTML.length - 2);
+        rowHTML += "</th><th>";
+
         let count = 0;
         for (let j = 0; j < 3; j++) {
             if (resultData[i]["stars"][j] !== undefined) {
