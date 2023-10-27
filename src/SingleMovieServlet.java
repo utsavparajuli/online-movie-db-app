@@ -79,6 +79,15 @@ public class SingleMovieServlet extends HttpServlet {
 
                 String movieId = resultSet.getString("id");
 
+                //TODO: Movie adding to cart
+//                User user = (User) request.getSession().getAttribute("user");
+//                user.setMovieId(movieId);
+//                user.setMovieName(resultSet.getString("title"));
+//
+//                request.getSession().setAttribute("user", user);
+
+
+
                 jsonObject.addProperty("movie_id", movieId);
                 jsonObject.addProperty("movie_title", resultSet.getString("title"));
                 jsonObject.addProperty("year", resultSet.getString("year"));

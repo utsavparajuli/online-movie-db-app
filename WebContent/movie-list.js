@@ -66,6 +66,9 @@ function handleResult(resultData) {
         rowHTML = rowHTML.substring(0, rowHTML.length - 2);
         rowHTML += "</th>";
         rowHTML += "<th>" + resultData[i]["rating"] + "</th>" + "</tr>";
+        rowHTML += "<th>" + ' <div align="center"> <form ACTION="#" id="cart" METHOD="post">' +
+                               ' <input type="submit" VALUE="add to cart">' +
+                           '</form></div>';
 
         // Append the row created to the table body, which will refresh the page
         movieListTableBodyElement.append(rowHTML);

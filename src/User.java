@@ -10,4 +10,23 @@ public class User {
         this.username = username;
     }
 
+    private String movieId;
+
+    public String getMovieName() {
+        return movieName;
+    }
+
+    public void setMovieName(String movieName) {
+        this.movieName = movieName;
+    }
+
+    private String movieName;
+
+    public void setMovieId(String movieId) {
+        this.movieId = movieId;
+    }
+
+    public String getMovieId() {
+        return movieId;
+    }
 }
