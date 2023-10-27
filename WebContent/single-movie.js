@@ -59,7 +59,7 @@ function handleResult(resultData) {
 
     let moviePurchaseElement = jQuery("#movie_purchase");
 
-    moviePurchaseElement.append('<input name="item" type="hidden" value="' + resultData[0]["movie_title"] + '">');
+    moviePurchaseElement.append('<input name="item" type="hidden" value="' + resultData[0]["movie_id"] + '">');
 
     let movieSubInfoElement = jQuery("#movie_sub_info");
 

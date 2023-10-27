@@ -5,6 +5,7 @@ let cart = $("#cart");
  * @param resultDataString jsonObject, consists of session info
  */
 function handleSessionData(resultDataString) {
+
     let resultDataJson = JSON.parse(resultDataString);
 
     console.log("handle session response");
@@ -51,6 +52,8 @@ function handleCartInfo(cartEvent) {
      * event handler when the event is triggered.
      */
     cartEvent.preventDefault();
+    console.log(cart); // Check the value of cart
+
 
     $.ajax("api/cart", {
         method: "POST",
@@ -62,7 +65,10 @@ function handleCartInfo(cartEvent) {
     });
 
     // clear input form
-    cart[0].reset();
+    // Clear input form sif cart is defined
+    if (cart) {
+        cart[0].reset();
+    }
 }
 
 $.ajax("api/cart", {
@@ -72,3 +78,10 @@ $.ajax("api/cart", {
 
 // Bind the submit action of the form to a event handler function
 cart.submit(handleCartInfo);
+// Event delegation for dynamically injected form
+// $(document).ready(function() {
+//     // Event delegation for dynamically injected form
+//     $(document).on('submit', '#cart', handleCartInfo);
+// });
+
+
