@@ -27,17 +27,37 @@ function handleSessionData(resultDataString) {
 function handleCartArray(resultArray) {
     console.log(resultArray);
     let item_list = $("#item_list");
-    // change it to html list
-    let res = "<ul>";
-    for (let i = 0; i < resultArray.length; i++) {
-        // each item will be in a bullet point
-        res += "<li>" + resultArray[i] + "</li>";
-    }
-    res += "</ul>";
 
-    // clear the old array and show the new array in the frontend
-    item_list.html("");
-    item_list.append(res);
+    for (let i = 0; i < resultArray.length; i++) {
+        let res = "";
+        res += "<tr>";
+        res += "<th>"
+            + '<a href="single-movie.html?id=' + resultArray[i]["movie_id"] + '">'
+            + resultArray[i]["movie_title"] + '</a>' + "</th>";
+        res += "<th>"
+            + resultArray[i]["quantity"]
+            + "</th>";
+        res += "<th> $"
+            + resultArray[i]["price"]
+            + "</th>";
+        res += "<th> $"
+            + resultArray[i]["price"] * resultArray[i]["quantity"]
+            + "</th>";
+        res += "</tr>";
+
+        // Append the row created to the table body, which will refresh the page
+        item_list.append(res);
+    }    // change it to html list
+    // let res = "<ul>";
+    // for (let i = 0; i < resultArray.length; i++) {
+    //     // each item will be in a bullet point
+    //     res += "<li>" + resultArray[i] + "</li>";
+    // }
+    // res += "</ul>";
+    //
+    // // clear the old array and show the new array in the frontend
+    // item_list.html("");
+    // item_list.append(res);
 }
 
 /**
