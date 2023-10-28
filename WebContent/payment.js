@@ -31,10 +31,11 @@ function handleOrderPlaced(resultDataString) {
     console.log("handle order submit response");
     console.log(resultDataJson);
     console.log(resultDataJson["status"]);
+    console.log(resultDataJson["recorded"])
 
     // If login succeeds, it will redirect the user to index.html
     if (resultDataJson["status"] === "success") {
-        window.location.replace("confirmation.html");
+        window.location.replace("confirmation.html?sales=" + resultDataJson["recorded"]);
     } else {
         // If login fails, the web page will display
         // error messages on <div> with id "login_error_message"

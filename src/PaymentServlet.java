@@ -12,10 +12,7 @@ import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -111,6 +108,45 @@ public class PaymentServlet extends HttpServlet {
                 // set this user into the session
                 responseJsonObject.addProperty("status", "success");
                 responseJsonObject.addProperty("message", "success");
+
+                String customerId = (String) request.getSession().getAttribute("customerId");
+                String movieId = null;
+                String date = new Date(request.getSession().getLastAccessedTime()).toString();
+
+
+                //Posting it to the system in the sales table
+
+                ArrayList<String> previousItems = (ArrayList<String>) request.getSession().getAttribute("previousItems");
+
+
+                int numberofMoviesrecorded = 0;
+
+                for (String s :
+                        previousItems) {
+                    movieId = s;
+
+                    String saleEntryQuery = "INSERT INTO sales VALUES (null, " + customerId + ", '" + movieId + "', '" + date + "');";
+
+                    PreparedStatement insertStatement = conn.prepareStatement(saleEntryQuery);
+
+                    var updateResponse = insertStatement.executeUpdate();
+
+
+
+                    if(updateResponse == 1) {
+                        System.out.println("sale recorded");
+                        numberofMoviesrecorded++;
+                    }
+                    else {
+                        System.out.println("sale not recorded");
+                    }
+                    insertStatement.close();
+                }
+                responseJsonObject.addProperty("recorded", numberofMoviesrecorded);
+
+
+
+//                PreparedStatement salePStatement = conn.prepareStatement();
             }
             else {
                 responseJsonObject.addProperty("status", "fail");
@@ -122,7 +158,7 @@ public class PaymentServlet extends HttpServlet {
             }
             rs.close();
             statement.close();
-//            response.setStatus(200);
+            response.setStatus(200);
             response.getWriter().write(responseJsonObject.toString());
 
 
