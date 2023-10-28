@@ -65,7 +65,13 @@ function handleResult(resultData) {
         }
         rowHTML = rowHTML.substring(0, rowHTML.length - 2);
         rowHTML += "</th>";
-        rowHTML += "<th>" + resultData[i]["rating"] + "</th>" + "</tr>";
+        rowHTML += "<th>" + resultData[i]["rating"] + "</th>";
+        //TODO: the item is not being added onto the cart through the movie-list
+        rowHTML += "<th>" + '<form ACTION="#" id="cart" METHOD="POST">' +
+            '    <label> <input name="item" type="hidden" value="' + resultData[i]["movie_title"] + '"></label>' +
+            '    <input type="submit" VALUE="add to cart">' +
+            '  </form> </th> </tr>';
+
 
         // Append the row created to the table body, which will refresh the page
         movieListTableBodyElement.append(rowHTML);
