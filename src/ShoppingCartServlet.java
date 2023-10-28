@@ -61,6 +61,10 @@ public class ShoppingCartServlet extends HttpServlet {
         Map<String, Long> movieCounts = previousItems.stream()
                 .collect(Collectors.groupingBy(s -> s, Collectors.counting()));
 
+        User user = (User) request.getSession().getAttribute("user");
+
+        user.clearCart();
+
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
             // Get a connection from dataSource
@@ -85,6 +89,18 @@ public class ShoppingCartServlet extends HttpServlet {
 
                     String movieId = resultSet.getString("id");
 
+                    if (user.getCartItems().containsKey(movieId)) {
+                        user.getCartItems().get(movieId).setQuantity(user.getCartItems().get(movieId).getQuantity() + 1);
+                    }
+                    else {
+                        user.addMovie(new Movie(movieId, resultSet.getString("title"),
+                                Double.parseDouble(resultSet.getString("price")), entry.getValue().intValue()));
+                    }
+
+
+
+
+
                     jsonObject.addProperty("movie_id", movieId);
                     jsonObject.addProperty("movie_title", resultSet.getString("title"));
                     jsonObject.addProperty("quantity", entry.getValue());
@@ -98,10 +114,12 @@ public class ShoppingCartServlet extends HttpServlet {
                 statement.close();
             }
 
+            request.getSession().setAttribute("user", user);
             responseJsonObject.add("previousItems", previousItemsJsonArray);
 
             // write all the data into the jsonObject
             response.getWriter().write(responseJsonObject.toString());
+
 
 
             // Write JSON string to output
@@ -129,7 +147,6 @@ public class ShoppingCartServlet extends HttpServlet {
         String item = request.getParameter("item");
         String itemTitle = request.getParameter("item_title");
 
-        User user = (User) request.getSession().getAttribute("user");
 
 //        String item = user.getMovieName();
 

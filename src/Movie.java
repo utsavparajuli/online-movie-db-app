@@ -1,14 +1,21 @@
+import java.util.Objects;
+
 public class Movie {
     private final String id;
     private final String title;
     private int quantity;
-    private final int price;
+    private double price;
 
-    public Movie(String id, String title) {
+    public Movie(String id, String title, double price, int quantity) {
         this.id = id;
         this.title = title;
-        this.price = 1;
-        quantity = 1;
+        this.price = price;
+        this.quantity = quantity;
+    }
+
+    public Movie(String id) {
+        this.id = id;
+        title = null;
     }
 
     public String getId() {
@@ -27,7 +34,20 @@ public class Movie {
         this.quantity = quantity;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Movie movie = (Movie) o;
+        return Objects.equals(getId(), movie.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
