@@ -19,10 +19,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-/**
- * This IndexServlet is declared in the web annotation below,
- * which is mapped to the URL pattern /api/index.
- */
+
 @WebServlet(name = "CartServlet", urlPatterns = "/api/cart")
 public class ShoppingCartServlet extends HttpServlet {
 
@@ -42,12 +39,9 @@ public class ShoppingCartServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession();
-        String sessionId = session.getId();
-        long lastAccessTime = session.getLastAccessedTime();
+        User user = (User) session.getAttribute("user");
 
         JsonObject responseJsonObject = new JsonObject();
-        responseJsonObject.addProperty("sessionID", sessionId);
-        responseJsonObject.addProperty("lastAccessTime", new Date(lastAccessTime).toString());
 
         ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
         if (previousItems == null) {
@@ -56,37 +50,27 @@ public class ShoppingCartServlet extends HttpServlet {
         // Log to localhost log
         request.getServletContext().log("getting " + previousItems.size() + " items");
         JsonArray previousItemsJsonArray = new JsonArray();
+        //used to add all the items in previousItems to previousItemsJsonArray
         //previousItems.forEach(previousItemsJsonArray::add);
 
         Map<String, Long> movieCounts = previousItems.stream()
                 .collect(Collectors.groupingBy(s -> s, Collectors.counting()));
 
-        User user = (User) request.getSession().getAttribute("user");
 
+        //to build a new cart everytime
         user.clearCart();
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
-            // Get a connection from dataSource
-
-            // Construct a query with parameter represented by "?". Gets the movie details based on the '?'
-
             for (Map.Entry<String, Long> entry : movieCounts.entrySet()) {
-                String query = "SELECT m.id, m.title, m.price " +
-                        "FROM movies m " +
-                        "WHERE m.id = '" + entry.getKey() +"';";
+                String query = String.format("SELECT m.id, m.title, m.price FROM movies m WHERE m.id = '%s';", entry.getKey());
 
                 PreparedStatement statement = conn.prepareStatement(query);
-//                statement.setString(1, id);
                 ResultSet resultSet = statement.executeQuery();
-
 
                 // Iterate through each row of resultSet
                 while (resultSet.next()) {
-                    // Create a JsonObject based on the data we retrieve from resultSet
-
                     JsonObject jsonObject = new JsonObject();
-
                     String movieId = resultSet.getString("id");
 
                     if (user.getCartItems().containsKey(movieId)) {
@@ -97,30 +81,21 @@ public class ShoppingCartServlet extends HttpServlet {
                                 Double.parseDouble(resultSet.getString("price")), entry.getValue().intValue()));
                     }
 
-
-
-
-
                     jsonObject.addProperty("movie_id", movieId);
                     jsonObject.addProperty("movie_title", resultSet.getString("title"));
                     jsonObject.addProperty("quantity", entry.getValue());
                     jsonObject.addProperty("price", resultSet.getString("price"));
 
-
                     previousItemsJsonArray.add(jsonObject);
-
                 }
                 resultSet.close();
                 statement.close();
             }
-
             request.getSession().setAttribute("user", user);
             responseJsonObject.add("previousItems", previousItemsJsonArray);
 
             // write all the data into the jsonObject
             response.getWriter().write(responseJsonObject.toString());
-
-
 
             // Write JSON string to output
             // Set response status to 200 (OK)
@@ -145,11 +120,6 @@ public class ShoppingCartServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String item = request.getParameter("item");
-        String itemTitle = request.getParameter("item_title");
-
-
-//        String item = user.getMovieName();
-
         System.out.println(item);
         HttpSession session = request.getSession();
 

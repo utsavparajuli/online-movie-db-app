@@ -5,22 +5,19 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-/**
- * This IndexServlet is declared in the web annotation below,
- * which is mapped to the URL pattern /api/index.
- */
+
 @WebServlet(name = "PaymentServlet", urlPatterns = "/api/payment")
 public class PaymentServlet extends HttpServlet {
 
@@ -40,15 +37,9 @@ public class PaymentServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         JsonObject responseJsonObject = new JsonObject();
-
-
-        JsonArray previousItemsJsonArray = new JsonArray();
-
-        User user = (User) request.getSession().getAttribute("user");
-
-
-
-        double price = 0;
+        JsonArray  previousItemsJsonArray = new JsonArray();
+        User       user = (User) request.getSession().getAttribute("user");
+        double     price = 0;
 
         for (Map.Entry<String, Movie> entry : user.getCartItems().entrySet()) {
             JsonObject jsonObject = new JsonObject();
@@ -59,22 +50,15 @@ public class PaymentServlet extends HttpServlet {
 
             var totalPerMovie = entry.getValue().getPrice() * entry.getValue().getQuantity();
             price += totalPerMovie;
+
             previousItemsJsonArray.add(jsonObject);
         }
 
         responseJsonObject.add("previousItems", previousItemsJsonArray);
-
         responseJsonObject.addProperty("total", price);
 
-
-            // write all the data into the jsonObject
-            response.getWriter().write(responseJsonObject.toString());
-
-
-
-            // Write JSON string to output
-            // Set response status to 200 (OK)
-            response.setStatus(200);
+        response.getWriter().write(responseJsonObject.toString());
+        response.setStatus(200);
 
     }
 
@@ -93,9 +77,9 @@ public class PaymentServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try (Connection conn = dataSource.getConnection()) {
-            String query = "SELECT * FROM creditcards as cc " +
-                    "WHERE cc.firstName = '" + first_name + "' AND cc.lastName = '" + last_name + "'" +
-                    " AND cc.id = '" + cc_number + "' AND cc.expiration = '" + exp_date + "';";
+            String query = String.format("SELECT * FROM creditcards as cc " +
+                                        "WHERE cc.firstName = '%s' AND " + "cc.lastName = '%s' AND cc.id = '%s' " +
+                                        "AND cc.expiration = '%s';", first_name, last_name, cc_number, exp_date);
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -103,65 +87,49 @@ public class PaymentServlet extends HttpServlet {
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
-            // TODO: check if it is null
             if (rs.next()) {
-                // set this user into the session
                 responseJsonObject.addProperty("status", "success");
                 responseJsonObject.addProperty("message", "success");
 
                 String customerId = (String) request.getSession().getAttribute("customerId");
-                String movieId = null;
+                String movieId;
                 String date = new Date(request.getSession().getLastAccessedTime()).toString();
-
-
-                //Posting it to the system in the sales table
 
                 ArrayList<String> previousItems = (ArrayList<String>) request.getSession().getAttribute("previousItems");
 
 
-                int numberofMoviesrecorded = 0;
+                int numberMovies = 0;
 
                 for (String s :
                         previousItems) {
                     movieId = s;
-
-                    String saleEntryQuery = "INSERT INTO sales VALUES (null, " + customerId + ", '" + movieId + "', '" + date + "');";
+                    String saleEntryQuery = String.format("INSERT INTO sales VALUES (null, %s, '%s', '%s');",
+                                            customerId, movieId, date);
 
                     PreparedStatement insertStatement = conn.prepareStatement(saleEntryQuery);
-
                     var updateResponse = insertStatement.executeUpdate();
-
-
 
                     if(updateResponse == 1) {
                         System.out.println("sale recorded");
-                        numberofMoviesrecorded++;
+                        numberMovies++;
                     }
                     else {
                         System.out.println("sale not recorded");
                     }
                     insertStatement.close();
                 }
-                responseJsonObject.addProperty("recorded", numberofMoviesrecorded);
-
-
-
-//                PreparedStatement salePStatement = conn.prepareStatement();
+                responseJsonObject.addProperty("recorded", numberMovies);
             }
             else {
                 responseJsonObject.addProperty("status", "fail");
                 // Log to localhost log
                 request.getServletContext().log("payment failed");
-
-                // sample error messages. in practice, it is not a good idea to tell user which one is incorrect/not exist.
-                responseJsonObject.addProperty("message", "Wrong information");
+                responseJsonObject.addProperty("message", "Could not validate credentials / Try Again");
             }
             rs.close();
             statement.close();
             response.setStatus(200);
             response.getWriter().write(responseJsonObject.toString());
-
-
         } catch (Exception e) {
             // Write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
@@ -174,5 +142,6 @@ public class PaymentServlet extends HttpServlet {
             response.setStatus(500);
         } finally {
             out.close();
-        }    }
+        }
+    }
 }

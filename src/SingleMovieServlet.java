@@ -79,22 +79,11 @@ public class SingleMovieServlet extends HttpServlet {
 
                 String movieId = resultSet.getString("id");
 
-                //TODO: Movie adding to cart
-//                User user = (User) request.getSession().getAttribute("user");
-//                user.setMovieId(movieId);
-//                user.setMovieName(resultSet.getString("title"));
-//
-//                request.getSession().setAttribute("user", user);
-
-
-
                 jsonObject.addProperty("movie_id", movieId);
                 jsonObject.addProperty("movie_title", resultSet.getString("title"));
                 jsonObject.addProperty("year", resultSet.getString("year"));
                 jsonObject.addProperty("director", resultSet.getString("director"));
                 jsonObject.addProperty("rating", resultSet.getString("rating"));
-
-                Statement starsStatement = conn.createStatement();
 
                 String starsQuery = "SELECT s.id, s.name, COUNT(DISTINCT sim.movieId) as movieCount " +
                         "FROM stars s, stars_in_movies sim " +

@@ -4,7 +4,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -19,7 +18,6 @@ public class LoginServlet extends HttpServlet {
 
     // Create a dataSource which registered in web.xml
     private DataSource dataSource;
-
 
     public void init(ServletConfig config) {
         try {
@@ -36,15 +34,14 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-
         JsonObject responseJsonObject = new JsonObject();
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         try (Connection conn = dataSource.getConnection()) {
-            String query = "SELECT * FROM customers as c " +
-                            "WHERE c.email = '" + username + "' AND c.password = '" + password + "'";
+            String query = String.format("SELECT * FROM customers as c WHERE c.email = '%s' AND c.password = '%s'",
+                                        username, password);
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);

@@ -10,11 +10,6 @@ function handleSessionData(resultDataString) {
 
     console.log("handle session response");
     console.log(resultDataJson);
-    console.log(resultDataJson["sessionID"]);
-
-    // show the session information
-    $("#sessionID").text("Session ID: " + resultDataJson["sessionID"]);
-    $("#lastAccessTime").text("Last access time: " + resultDataJson["lastAccessTime"]);
 
     // show cart information
     handleCartArray(resultDataJson["previousItems"]);
@@ -45,19 +40,8 @@ function handleCartArray(resultArray) {
             + "</th>";
         res += "</tr>";
 
-        // Append the row created to the table body, which will refresh the page
         item_list.append(res);
     }    // change it to html list
-    // let res = "<ul>";
-    // for (let i = 0; i < resultArray.length; i++) {
-    //     // each item will be in a bullet point
-    //     res += "<li>" + resultArray[i] + "</li>";
-    // }
-    // res += "</ul>";
-    //
-    // // clear the old array and show the new array in the frontend
-    // item_list.html("");
-    // item_list.append(res);
 }
 
 /**
