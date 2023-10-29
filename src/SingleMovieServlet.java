@@ -80,7 +80,7 @@ public class SingleMovieServlet extends HttpServlet {
                 String movieId = resultSet.getString("id");
 
                 jsonObject.addProperty("movie_id", movieId);
-                jsonObject.addProperty("movie_title", resultSet.getString("title"));
+                jsonObject.addProperty("title", resultSet.getString("title"));
                 jsonObject.addProperty("year", resultSet.getString("year"));
                 jsonObject.addProperty("director", resultSet.getString("director"));
                 jsonObject.addProperty("rating", resultSet.getString("rating"));

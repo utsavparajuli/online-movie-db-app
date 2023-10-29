@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import com.mysql.cj.Session;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -19,12 +18,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import classes.SessionParameters;
+
 
 // Declaring a WebServlet called StarsServlet, which maps to url "/api/movie-list"
 @WebServlet(name = "MovieListServlet", urlPatterns = "/api/movie-list")
 public class MovieListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-    //private SessionAttribute<String> nameAttribute;
 
     // Create a dataSource which registered in web.
     private DataSource dataSource;
@@ -39,29 +39,72 @@ public class MovieListServlet extends HttpServlet {
     }
 
     // Generates a SQL query String
-    private String getQueryString(String alphabetId, String genreId) {
-        String query = "SELECT m.id, m.title, m.year, m.director, r.rating " +
-                "FROM movies m, ratings r";
+    private String getQueryString(SessionParameters sessionParameters) {
+        String query = "SELECT DISTINCT m.id, m.title AS title, m.year, m.director, r.rating AS rating " +
+                "FROM movies m, ratings r ";
 
-        if (genreId != null) {
+        if (sessionParameters.movieGenreId != null) {
             query += ", genres_in_movies gim " +
-                    "WHERE m.id = gim.movieId AND m.id = r.movieId AND gim.genreID = " + genreId + " ";
+                    "WHERE m.id = gim.movieId AND m.id = r.movieId AND gim.genreID = "
+                    + sessionParameters.movieGenreId + " ";
 
-        } else if (alphabetId != null) {
-            query += " WHERE m.id = r.movieId AND M.title ";
+        } else if (sessionParameters.movieFirstChar != null) {
+            query += " WHERE m.id = r.movieId AND title ";
 
-            if (alphabetId.equals("none")) {
+            if (sessionParameters.movieFirstChar.equals("none")) {
                 query += "NOT REGEXP '^[0-9a-zA-Z]' ";
 
             } else {
-                query += "LIKE '" + alphabetId + "%' ";
+                query += "LIKE '" + sessionParameters.movieFirstChar + "%' ";
             }
-            query += "ORDER BY m.title ASC ";
+            //query += "ORDER BY m.title ASC ";
+        } else {
+            boolean isFirstSearchParameter = true;
+
+            if (sessionParameters.movieStar != null) {
+                query += ", stars s, stars_in_movies sim " +
+                        "WHERE m.id = sim.movieId AND s.id = sim.starId AND r.movieId = m.id ";
+                query += "AND s.name LIKE '%" + sessionParameters.movieStar + "%' ";
+                isFirstSearchParameter = false;
+            } else {
+                query += "WHERE m.id = r.movieId ";
+            }
+            if (sessionParameters.movieTitle != null) {
+                query += "AND m.title LIKE '%" + sessionParameters.movieTitle + "%' ";
+                isFirstSearchParameter = false;
+            }
+            if (sessionParameters.movieYear != null) {
+                query +=  "AND m.year = '" + sessionParameters.movieYear + "' ";
+                isFirstSearchParameter = false;
+            }
+            if (sessionParameters.movieDirector != null) {
+                query += "AND m.director LIKE '%" + sessionParameters.movieDirector + "%' ";
+            }
         }
 
-        // UPDATE BASED ON SELECT PAGE AMOUNT
-        query += "LIMIT 20;";
+        if (sessionParameters.sortOrderFirst == null) {
+            query += "ORDER BY rating DESC ";
+        } else {
+            query += "ORDER BY " + sessionParameters.sortOrderFirst + " " + sessionParameters.sortDirectionFirst + ", ";
+            query += sessionParameters.sortOrderSecond + " " + sessionParameters.sortDirectionSecond + " ";
+        }
 
+        if (sessionParameters.numResultsPerPage == 25) {
+            query += "LIMIT 25 ";
+            if (sessionParameters.offset == 0) {
+                query += ";";
+            } else {
+                query += "OFFSET " + Integer.toString(25 * sessionParameters.offset + 1) + ";";
+            }
+        } else {
+            query += "LIMIT " + Integer.toString(sessionParameters.numResultsPerPage) + " ";
+            if (sessionParameters.offset == 0) {
+                query += ";";
+            } else {
+                query += "OFFSET " + Integer.toString(
+                        sessionParameters.numResultsPerPage * sessionParameters.offset + 1) + ";";
+            }
+        }
         return query;
     }
 
@@ -72,16 +115,12 @@ public class MovieListServlet extends HttpServlet {
 
         response.setContentType("application/json"); // Response mime type
 
-        // CREATE GET PARAMETERS FUNCTION AND USE HERE
+        SessionParameters sessionParameters = new SessionParameters(request);
 
-        String genreId = request.getParameter("genre_id");
-        String alphabetId = request.getParameter("alphabet_id");
+        request.getServletContext().log(sessionParameters.toString());
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
-
-        //HttpSession session = request.getSession();
-        //nameAttribute.get(session);
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
@@ -89,7 +128,8 @@ public class MovieListServlet extends HttpServlet {
             // Declare our statement
             Statement statement = conn.createStatement();
 
-            String query = getQueryString(alphabetId, genreId);
+            String query = getQueryString(sessionParameters);
+            request.getServletContext().log("\n\nSQL query: " + query);
 
             // Perform the query
             ResultSet resultSet  = statement.executeQuery(query);
@@ -160,7 +200,6 @@ public class MovieListServlet extends HttpServlet {
                     genreResultSet.close();
                 }
             }
-
             resultSet .close();
             statement.close();
 
@@ -190,18 +229,4 @@ public class MovieListServlet extends HttpServlet {
 
         // Always remember to close db connection after usage. Here it's done by try-with-resources
     }
-
-    /*
-    class SessionAttribute<T> {
-        private final Class<T> clazz;
-        private final String name;
-
-        SessionAttribute(Class<T> clazz, String name) {
-            this.name = name;
-            this.clazz = clazz;
-        }
-        T get(HttpSession session) {
-            return clazz.cast(session.getAttribute(name));
-        }
-    }*/
 }
