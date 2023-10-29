@@ -31,15 +31,15 @@ function handleCartArray(resultArray) {
         for (let i = 0; i < resultArray.length; i++) {
 
             let cartAddString = "  <form ACTION='#' id='cart_2' METHOD='post'>" +
-                "    <input name='item' type='hidden' value='" + resultArray[i]["movie_id"] + "'>" +
-                "    <input name='type' type='hidden' value='add'>" +
-                "    <input type='submit' VALUE='+'>" +
+                "    <input name='item' type='hidden' value='" + resultArray[i]["movie_id"] + "+'>" +
+                "    <input name='type' type='hidden' value=\"add\">" +
+                "    <input type='submit' VALUE=\"+\">" +
                 "   </form>"
 
-            let cartRemoveString = "  <form ACTION='#' id='cart_3' METHOD='post'>" +
-                "    <input name='item' type='hidden' value='" + resultArray[i]["movie_id"] + "'>" +
-                "    <input name='type' type='hidden' value='remove'>" +
-                "    <input type='submit' VALUE='-'>" +
+            let cartRemoveString = "  <form ACTION='#' id='cart_2' METHOD='post'>" +
+                "    <input name='item' type='hidden' value='" + resultArray[i]["movie_id"] + "-'>" +
+                "    <input name='type' type='hidden' value=\"remove\">" +
+                "    <input type='submit' VALUE=\"-\">" +
                 "   </form>"
 
             let price = (Number(resultArray[i]["price"] * resultArray[i]["quantity"])).toFixed(2);
@@ -59,8 +59,7 @@ function handleCartArray(resultArray) {
             res += "<td> $"
                 + (Number(resultArray[i]["price"] * resultArray[i]["quantity"])).toFixed(2)
                 + "</td>";
-            res += "<td>" + cartAddString + "</td>";
-            res += "<td>" + cartRemoveString + "</td>";
+            res += "<td>" + cartAddString + cartRemoveString + "<br></td>";
 
             // res += "<td><button class='add'>+</button><button class='subtract'>-</button></td>";
             res += "</tr>";
@@ -83,6 +82,7 @@ function handleCartArray(resultArray) {
             // event.preventDefault(); // Prevent the default form submission
             let cartEvent = $(this); // Use the current form that triggered the submit event
 
+            console.log(event.currentTarget)
             cart_2 = $(event.currentTarget)
 
             console.log(cart_2)

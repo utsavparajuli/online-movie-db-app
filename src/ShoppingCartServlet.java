@@ -121,23 +121,61 @@ public class ShoppingCartServlet extends HttpServlet {
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String item = request.getParameter("item");
+        String  updateType = request.getParameter("type");
+        String buttonType = request.getParameter("submit");
+
+        String typeOfCartUpdate = item.substring(item.length() - 1);
+
+        if (item.length() > 0) {
+            item = item.substring(0, item.length() - 1);
+            System.out.println(item); // Output: "Hello, World"
+        } else {
+            // Handle the case when the string is empty (no characters to remove).
+            System.out.println("The string is empty.");
+        }
+
+        System.out.println(updateType);
+
+        request.getParameterMap();
+
         System.out.println(item);
+        System.out.println(typeOfCartUpdate);
+
         HttpSession session = request.getSession();
 
         // get the previous items in a ArrayList
         ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
-        if (previousItems == null) {
-            previousItems = new ArrayList<String>();
-            previousItems.add(item);
-            session.setAttribute("previousItems", previousItems);
-        } else {
-            // prevent corrupted states through sharing under multi-threads
-            // will only be executed by one thread at a time
-            synchronized (previousItems) {
+
+        if(typeOfCartUpdate.equalsIgnoreCase("+") ) {
+            if (previousItems == null) {
+                previousItems = new ArrayList<String>();
                 previousItems.add(item);
+                session.setAttribute("previousItems", previousItems);
+            } else {
+                // prevent corrupted states through sharing under multi-threads
+                // will only be executed by one thread at a time
+                synchronized (previousItems) {
+                    previousItems.add(item);
+                }
+            }
+        }
+        else {
+            synchronized (previousItems) {
+                previousItems.remove(item);
             }
         }
 
+//        if (previousItems == null) {
+//            previousItems = new ArrayList<String>();
+//            previousItems.add(item);
+//            session.setAttribute("previousItems", previousItems);
+//        } else {
+//            // prevent corrupted states through sharing under multi-threads
+//            // will only be executed by one thread at a time
+//            synchronized (previousItems) {
+//                previousItems.add(item);
+//            }
+//        }
         JsonObject responseJsonObject = new JsonObject();
 
         JsonArray previousItemsJsonArray = new JsonArray();

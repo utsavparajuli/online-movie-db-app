@@ -2,6 +2,7 @@
  * Handles the data returned by the API, read the jsonObject and populate data into html elements
  * @param target
  */
+let cart_list;
 
 function getParameterByName(target) {
     // Get request URL
@@ -27,6 +28,38 @@ function addToCartFromList(movieId) {
     console.log("added to cart from movie id");
     console.log(movieId);
 }
+
+// /**
+//  * Submit form content with POST method
+//  * @param cartEvent
+//  */
+// function addToCart(cartEvent) {
+//     console.log("submit cart form from movie-list");
+//     console.log(cartEvent);
+//     /**
+//      * When users click the submit button, the browser will not direct
+//      * users to the url defined in HTML form. Instead, it will call this
+//      * event handler when the event is triggered.
+//      */
+//     cartEvent.preventDefault();
+//     console.log(cart); // Check the value of cart
+//
+//
+//     $.ajax("api/cart", {
+//         method: "POST",
+//         data: cart.serialize(),
+//         success: resultDataString => {
+//             let resultDataJson = JSON.parse(resultDataString);
+//             handleCartArray(resultDataJson["previousItems"]);
+//         }
+//     });
+//
+//     // clear input form
+//     // Clear input form sif cart is defined
+//     if (cart) {
+//         cart[0].reset();
+//     }
+// }
 
 function handleResult(resultData) {
     console.log("handleResult: populating star table from resultData");
@@ -74,11 +107,14 @@ function handleResult(resultData) {
 
         let movieIdForCart = resultData[i]["movie_id"];
 
+
         //TODO: the item is not being added onto the cart through the movie-list
         rowHTML += "<th>" + '<form ACTION="#" id="cart_list" METHOD="POST">' +
-            '    <label> <input name="item" type="hidden" value="' + movieIdForCart + '"></label>' +
-            '    <input type="button" onclick="addToCartFromList(\'' + movieIdForCart + '\')" VALUE="add to cart">' +
+            '    <label> <input name="item" type="hidden" value="' + movieIdForCart + '+"></label>' +
+            '<input name="type" type="hidden" value="add">' +
+            '    <input type="submit" VALUE="add to cart">' +
             '  </form> </th> </tr>';
+
         // rowHTML += "<th>" + '<form ACTION="#" id="cart_list" METHOD="POST">' +
         //     '    <label> <input name="item" type="hidden" value="' + movieIdForCart + '"></label>' +
         //     '    <input type="submit" VALUE="add to cart">' +
@@ -88,6 +124,20 @@ function handleResult(resultData) {
         movieListTableBodyElement.append(rowHTML);
 
     }
+
+    movieListTableBodyElement.on("submit", "#cart_list", function(event) {
+        // event.preventDefault(); // Prevent the default form submission
+        let cartEvent = $(this); // Use the current form that triggered the submit event
+
+        console.log(event.currentTarget)
+        cart_list = $(event.currentTarget)
+
+        console.log(cart_list);
+
+        cart = cart_list;
+        // Handle the form submission for "cart_2"
+        handleCartInfo(event);
+    });
 }
 
 
