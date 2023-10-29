@@ -28,20 +28,7 @@ function handleResult(resultData) {
     $("#movie_list_table_body").empty();
     let movieListTableBodyElement = jQuery("#movie_list_table_body");
 
-    let numMoviesRequested = getParameterByName("num_results");
-    console.log("requested number:" + numMoviesRequested);
-    if (numMoviesRequested != null) {
-        let numMovies = parseInt(numMoviesRequested);
-        if (resultData.length < numMovies) {
-            console.log("less than " + numMovies.toString() + " results, disable next button");
-            document.getElementById("next_page").className = "page-item disabled";
-        }
-    } else {
-        if (resultData.length < 25) {
-            console.log("less than 25 results, disable next button");
-            document.getElementById("next_page").className = "page-item disabled";
-        }
-    }
+    reloadPaginationInformation(resultData.length);
 
     for (let i = 0; i < resultData.length; i++) {
         let rowHTML = "<tr><th>" +
@@ -72,12 +59,19 @@ function handleResult(resultData) {
         movieListTableBodyElement.append(rowHTML);
     }
 
+    console.log("sessions url: " + sessionStorage.getItem("backButtonUrl"));
+
     let currentUrl = window.location.href.split("?")[1];
     let urlFirstParam = currentUrl.split("&")[0];
-    console.log("current url: " + currentUrl);
+
+    console.log("current url(handleResult): " + currentUrl);
     console.log("url Main Part: " + urlFirstParam);
+
     let newUrl = "";
-    if (currentUrl.length > 20) {
+    // idea: check for presence of back rather than the
+    // length of the url which will vary (based on # of searches or genre etc
+    //if (getParameterByName("back") == null)
+    if (currentUrl.length > 15) {
         newUrl = currentUrl;
     } else {
         newUrl = "movie-list.html?" + urlFirstParam + "&num_results=" + document.getElementById("num_results").value;
@@ -93,23 +87,41 @@ function handleResult(resultData) {
 
     console.log("movieList back url: " + newUrl);
     sessionStorage.setItem("backButtonUrl", newUrl);
-
 }
 
-function generateUrl() {
+function generateUrl(pageDirection) {
     let currentUrl = window.location.href.split("?")[1];
-    console.log("current url: " + currentUrl);
+    console.log("current url(generateUrl): " + currentUrl);
+
+    let newUrl = "";
     const currentPageNumber = parseInt(document.getElementById("current_page").innerText);
-    let newUrl = currentUrl + "&num_results=" + document.getElementById("num_results").value;
-    newUrl += "&offset=" + currentPageNumber.toString();
-    let sortArray = document.getElementById("sort_order").value.split(" ");
-    let test = "&first_sort=" + sortArray[0] +
-        "&first_dir=" + sortArray[1] +
-        "&second_sort=" + sortArray[2] +
-        "&second_dir=" + sortArray[3] +
-        "&back=true";
-    newUrl += test;
-    console.log("next url " + newUrl);
+    console.log("currentPageNumber: " + currentPageNumber);
+    let testForBack = getParameterByName("back");
+
+    if (testForBack != null) {
+        console.log("\n\nBACK SUCCESS\n\n");
+        let urlFirstParam = currentUrl.split("&")[0];
+        newUrl = urlFirstParam +
+            "&num_results=" + getParameterByName("num_results") +
+            "&offset=" + (currentPageNumber + pageDirection - 1) +
+            "&first_sort=" + getParameterByName("first_sort") +
+            "&first_dir=" + getParameterByName("first_dir") +
+            "&second_sort=" + getParameterByName("second_sort") +
+            "&second_dir=" + getParameterByName("second_dir") +
+            "&back=true";
+    } else {
+        newUrl = currentUrl + "&num_results=" + document.getElementById("num_results").value;
+        newUrl += "&offset=" + currentPageNumber.toString();
+        let sortArray = document.getElementById("sort_order").value.split(" ");
+        let test = "&first_sort=" + sortArray[0] +
+            "&first_dir=" + sortArray[1] +
+            "&second_sort=" + sortArray[2] +
+            "&second_dir=" + sortArray[3] +
+            "&back=true";
+        newUrl += test;
+    }
+    console.log("backButtonUrl: " + newUrl);
+    sessionStorage.setItem("backButtonUrl", newUrl);
     return newUrl;
 }
 
@@ -117,14 +129,12 @@ function changePage(pageDirection) {
     const currentPageNumber = parseInt(document.getElementById("current_page").innerText);
     if (pageDirection < 0) {
         $("#current_page").text(currentPageNumber - 2);
+        console.log("dir -1: " + (currentPageNumber - 2));
     }
-    let newUrl = generateUrl();
-    if (pageDirection > 0)
-        $("#current_page").text(currentPageNumber + 1);
-    else
-        $("#current_page").text(currentPageNumber - 1);
-
-    console.log("direction " + pageDirection);
+    let newUrl = generateUrl(pageDirection);
+    //if (getParameterByName("back") ==  null)
+    $("#current_page").text(currentPageNumber + pageDirection);
+    console.log("next page number: " + (currentPageNumber + pageDirection));
 
     if (pageDirection === 1) {
         document.getElementById("previous_page").className = "page-item";
@@ -134,7 +144,7 @@ function changePage(pageDirection) {
         }
         document.getElementById("next_page").className = "page-item";
     }
-    window.scrollTo({top: 0, behavior: "smooth"});
+    //window.scrollTo({top: 0, behavior: "smooth"});
     sendHttpRequest(newUrl);
 }
 
@@ -173,7 +183,7 @@ function goToPreviousPage() {
 
 function submitSort() {
     let currentUrl = window.location.href.split("?")[1];
-    console.log("current url: " + currentUrl);
+    console.log("current url (sort): " + currentUrl);
     let newUrl = currentUrl + "&num_results=" + document.getElementById("num_results").value;
     let sortArray = document.getElementById("sort_order").value.split(" ");
     newUrl += "&first_sort=" + sortArray[0] +
@@ -223,14 +233,38 @@ function sendHttpRequest(url) {
     });
 }
 
-function reloadPageInformation(url) {
-    let offset = getParameterByName(url, "offset");
-    $("#current_page").text(offset + 1);
-    if (offset + 1 === 1) {
-        document.getElementById("previous_page").className = "page-item disabled";
-        document.getElementById("next_page").className = "page-item"
+function reloadPaginationInformation(resultDataLength) {
+    let numMoviesRequested = getParameterByName("num_results");
+    console.log("requested number:" + numMoviesRequested);
+    if (numMoviesRequested != null) {
+        let numMovies = parseInt(numMoviesRequested);
+        if (resultDataLength < numMovies) {
+            console.log("less than " + numMovies.toString() + " results, disable next button");
+            document.getElementById("next_page").className = "page-item disabled";
+        }
+
+        let checkForBack = getParameterByName("back");
+        console.log("backCheck passed");
+        if (checkForBack != null) {
+            let offset = parseInt(getParameterByName("offset"));
+            console.log("url: " + window.location.href);
+            console.log("offset: " + offset);
+            let newPageNumber = offset + 1;
+            console.log("Page Number: " + newPageNumber);
+            $("#current_page").text(newPageNumber);
+            if (newPageNumber === 1) {
+                document.getElementById("previous_page").className = "page-item disabled";
+                console.log("prev page disabled");
+            } else {
+                document.getElementById("previous_page").className = "page-item";
+                console.log("prev page enabled");
+            }
+        }
     } else {
-        document.getElementById("previous_page").className = "page-item";
+        if (resultDataLength < 25) {
+            console.log("less than 25 results, disable next button");
+            document.getElementById("next_page").className = "page-item disabled";
+        }
     }
 }
 
@@ -241,7 +275,7 @@ if (getParameterByName("back") != null) {
     if (sessionStorage.getItem("backButtonUrl") != null) {
         let url = sessionStorage.getItem("backButtonUrl")
         url = url.split("?")[1];
-        url = url.substring(0, url.length - 10);
+        url += "&back=true";
         console.log("SUCCESS: " + url);
         sendHttpRequest(url);
     } else {

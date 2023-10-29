@@ -150,6 +150,7 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("director", resultSet.getString("director"));
                 jsonObject.addProperty("rating", resultSet.getString("rating"));
 
+
                 String genreQuery = "SELECT g.name, g.id " +
                         "FROM genres g, genres_in_movies gim " +
                         "WHERE g.id = gim.genreID AND gim.movieId = ? " +
