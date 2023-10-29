@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class ShoppingCartServlet extends HttpServlet {
                     jsonObject.addProperty("movie_id", movieId);
                     jsonObject.addProperty("movie_title", resultSet.getString("title"));
                     jsonObject.addProperty("quantity", entry.getValue());
-                    jsonObject.addProperty("price", resultSet.getString("price"));
+                    jsonObject.addProperty("price", (resultSet.getString("price")));
 
                     previousItemsJsonArray.add(jsonObject);
                 }

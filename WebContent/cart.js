@@ -23,7 +23,13 @@ function handleCartArray(resultArray) {
     console.log(resultArray);
     let item_list = $("#item_list");
 
+    let totalCost = 0;
+
     for (let i = 0; i < resultArray.length; i++) {
+
+        let price = (Number (resultArray[i]["price"] * resultArray[i]["quantity"])).toFixed(2);
+        totalCost += (Number (price));
+
         let res = "";
         res += "<tr>";
         res += "<th>"
@@ -33,15 +39,23 @@ function handleCartArray(resultArray) {
             + resultArray[i]["quantity"]
             + "</th>";
         res += "<th> $"
-            + resultArray[i]["price"]
+            + (Number (resultArray[i]["price"])).toFixed(2)
             + "</th>";
         res += "<th> $"
-            + resultArray[i]["price"] * resultArray[i]["quantity"]
+            + (Number (resultArray[i]["price"] * resultArray[i]["quantity"])).toFixed(2)
             + "</th>";
         res += "</tr>";
 
         item_list.append(res);
+
     }    // change it to html list
+
+    if(resultArray.length > 0) {
+        item_list.append("<br><tr> <th></th><th>Total: </th><th>$" + totalCost +"</th><th></th></tr>");
+
+        item_list.append("<br><br><tr> <th></th><th></th><th></th><th></th><a href=\"payment.html\">" +
+            "<button id=\"payment_button\" value=\"Payment\">Proceed to Payment</button></a></tr>");
+    }
 }
 
 /**
@@ -50,6 +64,7 @@ function handleCartArray(resultArray) {
  */
 function handleCartInfo(cartEvent) {
     console.log("submit cart form");
+    console.log(cartEvent);
     /**
      * When users click the submit button, the browser will not direct
      * users to the url defined in HTML form. Instead, it will call this

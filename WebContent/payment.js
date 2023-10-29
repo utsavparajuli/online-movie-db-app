@@ -14,7 +14,7 @@ function handlePayment(resultDataString) {
 
     let total_cost = $("#total_cost");
 
-    total_cost.append('<label>' + resultDataJson["total"] + '</label>')
+    total_cost.append('<label>' + (Number (resultDataJson["total"])).toFixed(2) + '</label>')
 
     // show cart information
     console.log(resultDataJson["previousItems"]);

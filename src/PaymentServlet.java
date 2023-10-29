@@ -119,6 +119,12 @@ public class PaymentServlet extends HttpServlet {
                     insertStatement.close();
                 }
                 responseJsonObject.addProperty("recorded", numberMovies);
+
+                User       user = (User) request.getSession().getAttribute("user");
+                user.clearCart();
+
+                request.getSession().setAttribute("user", user);
+                request.getSession().setAttribute("previousItems", new ArrayList<String>());
             }
             else {
                 responseJsonObject.addProperty("status", "fail");

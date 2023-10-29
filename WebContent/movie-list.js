@@ -23,6 +23,11 @@ function getParameterByName(target) {
     // return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+function addToCartFromList(movieId) {
+    console.log("added to cart from movie id");
+    console.log(movieId);
+}
+
 function handleResult(resultData) {
     console.log("handleResult: populating star table from resultData");
     console.log(resultData);
@@ -66,17 +71,25 @@ function handleResult(resultData) {
         rowHTML = rowHTML.substring(0, rowHTML.length - 2);
         rowHTML += "</th>";
         rowHTML += "<th>" + resultData[i]["rating"] + "</th>";
-        //TODO: the item is not being added onto the cart through the movie-list
-        rowHTML += "<th>" + '<form ACTION="#" id="cart" METHOD="POST">' +
-            '    <label> <input name="item" type="hidden" value="' + resultData[i]["movie_title"] + '"></label>' +
-            '    <input type="submit" VALUE="add to cart">' +
-            '  </form> </th> </tr>';
 
+        let movieIdForCart = resultData[i]["movie_id"];
+
+        //TODO: the item is not being added onto the cart through the movie-list
+        rowHTML += "<th>" + '<form ACTION="#" id="cart_list" METHOD="POST">' +
+            '    <label> <input name="item" type="hidden" value="' + movieIdForCart + '"></label>' +
+            '    <input type="button" onclick="addToCartFromList(\'' + movieIdForCart + '\')" VALUE="add to cart">' +
+            '  </form> </th> </tr>';
+        // rowHTML += "<th>" + '<form ACTION="#" id="cart_list" METHOD="POST">' +
+        //     '    <label> <input name="item" type="hidden" value="' + movieIdForCart + '"></label>' +
+        //     '    <input type="submit" VALUE="add to cart">' +
+        //     '  </form> </th> </tr>';
 
         // Append the row created to the table body, which will refresh the page
         movieListTableBodyElement.append(rowHTML);
+
     }
 }
+
 
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
@@ -101,3 +114,5 @@ jQuery.ajax({
     url: "api/movie-list?" + urlAddon, // Setting request url
     success: (resultData) => handleResult(resultData) // Setting callback function to handle data
 });
+
+// Makes the HTTP GET request and registers on success callback function handleResult
