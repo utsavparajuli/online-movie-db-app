@@ -9,5 +9,5 @@ https://www.youtube.com/watch?v=FYTr6D_OTNw
 - Utsav Parajuli (utsavparajuli) : Task 1, Task 4, AWS, recording, html/css
 
 ### LIKE/ILIKE use
-When executing a search query we used LIKE '%XYZ%' for the movie title, movie director, and star name fields.
-When browing movies by the first character we used LIKE 'x%' for the movie title. 
+ - When executing a search query we used LIKE '%XYZ%' for the movie title, movie director, and star name fields.
+ - When browing movies by the first character we used LIKE 'x%' for the movie title. 
