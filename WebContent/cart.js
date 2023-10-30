@@ -33,13 +33,13 @@ function handleCartArray(resultArray) {
             let cartAddString = "  <form ACTION='#' id='cart_2' METHOD='post'>" +
                 "    <input name='item' type='hidden' value='" + resultArray[i]["movie_id"] + "+'>" +
                 "    <input name='type' type='hidden' value=\"add\">" +
-                "    <input type='submit' VALUE=\"+\">" +
+                "    <input type='submit'  class=\"btn btn-default\" VALUE=\"+\">" +
                 "   </form>"
 
             let cartRemoveString = "  <form ACTION='#' id='cart_2' METHOD='post'>" +
                 "    <input name='item' type='hidden' value='" + resultArray[i]["movie_id"] + "-'>" +
                 "    <input name='type' type='hidden' value=\"remove\">" +
-                "    <input type='submit' VALUE=\"-\">" +
+                "    <input type='submit'  class=\"btn btn-default\" VALUE=\"-\">" +
                 "   </form>"
 
             let price = (Number(resultArray[i]["price"] * resultArray[i]["quantity"])).toFixed(2);
@@ -74,7 +74,7 @@ function handleCartArray(resultArray) {
             item_list.append("<br><tr> <th></th><th>Total: </th><th>$" + totalCost + "</th><th></th></tr>");
 
             item_list.append("<br><br><tr> <th></th><th></th><th></th><th></th><a href=\"payment.html\">" +
-                "<button id=\"payment_button\" value=\"Payment\">Proceed to Payment</button></a></tr>");
+                "<button  class=\"btn btn-default\"  id=\"payment_button\" value=\"Payment\">Proceed to Payment</button></a></tr>");
         }
 
     // Handle the submit event of the parent container (item_list) and delegate it to the "cart_2" form

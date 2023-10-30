@@ -8,6 +8,23 @@ body {
 
 }
 
+.cart_home {
+    overflow: hidden; /* will contain if #first is longer than #second */
+}
+
+.top20_link {
+    width: 300px;
+    float:left; /* add this */
+}
+.home-image {
+    overflow: hidden; /* if you don't want #second to wrap below #first */
+    align-content: center;
+    width: 80%;
+    background-color: white;
+}
+
+
+
 #bg {
     margin: 0;
     padding: 0;
@@ -15,6 +32,24 @@ body {
     height: 100vh;
     overflow: hidden;
 }
+
+.title_center {
+    background: white;
+    border-radius: 10px;
+}
+
+.title_center h1 {
+    text-align: center;
+    padding: 0 0 20px 0;
+    border-bottom: 1px solid silver;
+    color: #2980b9;
+}
+
+.title_center a {
+    align-content: center;
+}
+
+
 
 .center {
     position: absolute;
@@ -115,11 +150,6 @@ form .txt_field {
 
 #shopping_cart_table {
     width: 100%;
-}
-.home-image {
-    align-content: center;
-    width: 80%;
-    background-color: white;
 }
 
 .home-image img:hover {

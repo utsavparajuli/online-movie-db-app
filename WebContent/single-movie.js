@@ -54,7 +54,7 @@ function handleResult(resultData) {
     let movieInfoElement = jQuery("#movie_info");
 
     // append two html <p> created to the h3 body, which will refresh the page
-    movieInfoElement.append("<div align='center'><h1><b>" + resultData[0]["movie_title"] + "</b></h1><i> (" +
+    movieInfoElement.append("<div align='center'><h1><b>" + resultData[0]["title"] + "</b></h1><i> (" +
         resultData[0]["year"] + ")</i><br><br>");
 
     let moviePurchaseElement = jQuery("#movie_purchase");
@@ -105,10 +105,9 @@ function handleResult(resultData) {
     }
 }
 
+
 function goBackToSessionPage() {
-    let url = sessionStorage.getItem("backButtonUrl");
-    console.log("back url: " + url)
-    window.location.href = url;
+    window.location.href = sessionStorage.getItem("backButtonUrl");
 }
 
 /**

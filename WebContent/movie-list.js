@@ -3,6 +3,8 @@
  * @param target
  */
 let cart_list;
+let movieListTableBodyElement = jQuery("#movie_list_table_body");
+
 
 function getParameterByName(target) {
     // Get request URL
@@ -63,8 +65,8 @@ function handleResult(resultData) {
     console.log("handleResult: populating movieList table from resultData");
     console.log(resultData);
 
+    // let movieListTableBodyElement = jQuery("#movie_list_table_body");
     $("#movie_list_table_body").empty();
-    let movieListTableBodyElement = jQuery("#movie_list_table_body");
 
     reloadPaginationInformation(resultData.length);
 
@@ -102,7 +104,7 @@ function handleResult(resultData) {
         rowHTML += "<th>" + '<form ACTION="#" id="cart_list" METHOD="POST">' +
             '    <label> <input name="item" type="hidden" value="' + movieIdForCart + '+"></label>' +
             '<input name="type" type="hidden" value="add">' +
-            '    <input type="submit" VALUE="add to cart">' +
+            '    <input type="submit"  class="btn btn-default" VALUE="add to cart">' +
             '  </form> </th> </tr>';
 
         // Append the row created to the table body, which will refresh the page
@@ -139,19 +141,19 @@ function handleResult(resultData) {
     console.log("movieList back url: " + newUrl);
     sessionStorage.setItem("backButtonUrl", newUrl);
   
-    movieListTableBodyElement.on("submit", "#cart_list", function(event) {
-        // event.preventDefault(); // Prevent the default form submission
-        let cartEvent = $(this); // Use the current form that triggered the submit event
-
-        console.log(event.currentTarget)
-        cart_list = $(event.currentTarget)
-
-        console.log(cart_list);
-
-        cart = cart_list;
-        // Handle the form submission for "cart_2"
-        handleCartInfo(event);
-    });
+    // movieListTableBodyElement.on("submit", "#cart_list", function(event) {
+    //     // event.preventDefault(); // Prevent the default form submission
+    //     let cartEvent = $(this); // Use the current form that triggered the submit event
+    //
+    //     console.log(event.currentTarget)
+    //     cart_list = $(event.currentTarget)
+    //
+    //     console.log(cart_list);
+    //
+    //     cart = cart_list;
+    //     // Handle the form submission for "cart_2"
+    //     handleCartInfo(event);
+    // });
 }
 
 
@@ -357,3 +359,17 @@ if (getParameterByName("back") != null) {
     console.log("Going to createUrl()");
     sendHttpRequest(createUrl());
 }
+
+movieListTableBodyElement.on("submit", "#cart_list", function(event) {
+    // event.preventDefault(); // Prevent the default form submission
+    let cartEvent = $(this); // Use the current form that triggered the submit event
+
+    console.log(event.currentTarget)
+    cart_list = $(event.currentTarget)
+
+    console.log(cart_list);
+
+    cart = cart_list;
+    // Handle the form submission for "cart_2"
+    handleCartInfo(event);
+});
