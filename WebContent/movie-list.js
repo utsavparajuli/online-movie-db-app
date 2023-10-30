@@ -68,6 +68,7 @@ function handleResult(resultData) {
     // let movieListTableBodyElement = jQuery("#movie_list_table_body");
     $("#movie_list_table_body").empty();
 
+    //TODO TESTING RIGHT HERE
     reloadPaginationInformation(resultData.length);
 
     for (let i = 0; i < resultData.length; i++) {
@@ -96,9 +97,7 @@ function handleResult(resultData) {
         rowHTML = rowHTML.substring(0, rowHTML.length - 2);
         rowHTML += "</th>";
         rowHTML += "<th>" + resultData[i]["rating"] + "</th>";
-
         let movieIdForCart = resultData[i]["movie_id"];
-
 
         //TODO: the item is not being added onto the cart through the movie-list
         rowHTML += "<th>" + '<form ACTION="#" id="cart_list" METHOD="POST">' +
@@ -111,49 +110,6 @@ function handleResult(resultData) {
         movieListTableBodyElement.append(rowHTML);
 
     }
-
-    console.log("sessions url: " + sessionStorage.getItem("backButtonUrl"));
-
-    let currentUrl = window.location.href.split("?")[1];
-    let urlFirstParam = currentUrl.split("&")[0];
-
-    console.log("current url(handleResult): " + currentUrl);
-    console.log("url Main Part: " + urlFirstParam);
-
-    let newUrl = "";
-    // idea: check for presence of back rather than the
-    // length of the url which will vary (based on # of searches or genre etc
-    //if (getParameterByName("back") == null)
-    if (currentUrl.length > 15) {
-        newUrl = currentUrl;
-    } else {
-        newUrl = "movie-list.html?" + urlFirstParam + "&num_results=" + document.getElementById("num_results").value;
-        let currentPageNumber = parseInt(document.getElementById("current_page").innerText);
-        newUrl += "&offset=" + (currentPageNumber - 1).toString();
-        let sortArray = document.getElementById("sort_order").value.split(" ");
-        newUrl += "&first_sort=" + sortArray[0] +
-            "&first_dir=" + sortArray[1] +
-            "&second_sort=" + sortArray[2] +
-            "&second_dir=" + sortArray[3] +
-            "&back=true";
-    }
-
-    console.log("movieList back url: " + newUrl);
-    sessionStorage.setItem("backButtonUrl", newUrl);
-  
-    // movieListTableBodyElement.on("submit", "#cart_list", function(event) {
-    //     // event.preventDefault(); // Prevent the default form submission
-    //     let cartEvent = $(this); // Use the current form that triggered the submit event
-    //
-    //     console.log(event.currentTarget)
-    //     cart_list = $(event.currentTarget)
-    //
-    //     console.log(cart_list);
-    //
-    //     cart = cart_list;
-    //     // Handle the form submission for "cart_2"
-    //     handleCartInfo(event);
-    // });
 }
 
 
@@ -162,38 +118,49 @@ function handleResult(resultData) {
  */
 
 function generateUrl(pageDirection) {
-    let currentUrl = window.location.href.split("?")[1];
-    console.log("current url(generateUrl): " + currentUrl);
+    //let currentUrl = window.location.href.split("?")[1];
+    let currentUrl = sessionStorage.getItem("baseUrl");
+    console.log("current base url: " + currentUrl);
 
     let newUrl = "";
     const currentPageNumber = parseInt(document.getElementById("current_page").innerText);
     console.log("currentPageNumber: " + currentPageNumber);
-    let testForBack = getParameterByName("back");
 
-    if (testForBack != null) {
-        console.log("\n\nBACK SUCCESS\n\n");
-        let urlFirstParam = currentUrl.split("&")[0];
-        newUrl = urlFirstParam +
-            "&num_results=" + getParameterByName("num_results") +
-            "&offset=" + (currentPageNumber + pageDirection - 1) +
-            "&first_sort=" + getParameterByName("first_sort") +
-            "&first_dir=" + getParameterByName("first_dir") +
-            "&second_sort=" + getParameterByName("second_sort") +
-            "&second_dir=" + getParameterByName("second_dir") +
-            "&back=true";
+    if (sessionStorage.getItem("backCheck") === "yes" || sessionStorage.getItem("sortedCheck") === "yes") {
+        let offset = parseInt(sessionStorage.getItem("offset"));
+        console.log("offset: " + offset);
+        console.log("new offset: " + offset + ", page direction: " + pageDirection + " = " + (offset + pageDirection));
+        newUrl = currentUrl +
+            "&num_results=" + sessionStorage.getItem("num_results") +
+            "&offset=" + (parseInt(sessionStorage.getItem("offset")) + pageDirection) +
+            "&first_sort=" + sessionStorage.getItem("first_sort") +
+            "&first_dir=" + sessionStorage.getItem("first_dir") +
+            "&second_sort=" + sessionStorage.getItem("second_sort") +
+            "&second_dir=" + sessionStorage.getItem("second_dir");
+        sessionStorage.setItem("offset", (offset + pageDirection));
+        console.log("\n\nURL CREATED FROM SORTED PAGE OR BACK PAGE: " + newUrl + "\n\n");
+        //sessionStorage.removeItem("sortedCheck");
+
     } else {
         newUrl = currentUrl + "&num_results=" + document.getElementById("num_results").value;
         newUrl += "&offset=" + currentPageNumber.toString();
         let sortArray = document.getElementById("sort_order").value.split(" ");
-        let test = "&first_sort=" + sortArray[0] +
+        newUrl += "&first_sort=" + sortArray[0] +
             "&first_dir=" + sortArray[1] +
             "&second_sort=" + sortArray[2] +
-            "&second_dir=" + sortArray[3] +
-            "&back=true";
-        newUrl += test;
+            "&second_dir=" + sortArray[3];
+        sessionStorage.setItem("num_results", document.getElementById("num_results").value);
+        sessionStorage.setItem("offset", currentPageNumber.toString());
+        sessionStorage.setItem("first_sort", sortArray[0]);
+        sessionStorage.setItem("first_dir", sortArray[1]);
+        sessionStorage.setItem("second_sort", sortArray[2]);
+        sessionStorage.setItem("second_dir", sortArray[3]);
+        sessionStorage.removeItem("sortedCheck");
+        sessionStorage.removeItem("backCheck");
+        console.log("\n\nURL CREATED FROM HTML: " + newUrl + "\n\n");
     }
-    console.log("backButtonUrl: " + newUrl);
-    sessionStorage.setItem("backButtonUrl", newUrl);
+
+    //sessionStorage.setItem("backButtonUrl", newUrl);
     return newUrl;
 }
 
@@ -216,7 +183,7 @@ function changePage(pageDirection) {
         }
         document.getElementById("next_page").className = "page-item";
     }
-    //window.scrollTo({top: 0, behavior: "smooth"});
+    window.scrollTo({top: 0, behavior: "smooth"});
     sendHttpRequest(newUrl);
 }
 
@@ -254,7 +221,8 @@ function goToPreviousPage() {
 */
 
 function submitSort() {
-    let currentUrl = window.location.href.split("?")[1];
+    //let currentUrl = window.location.href.split("?")[1];
+    let currentUrl = sessionStorage.getItem("baseUrl");
     console.log("current url (sort): " + currentUrl);
     let newUrl = currentUrl + "&num_results=" + document.getElementById("num_results").value;
     let sortArray = document.getElementById("sort_order").value.split(" ");
@@ -265,6 +233,17 @@ function submitSort() {
     console.log("new url: " + newUrl);
     $("#current_page").text(1);
     document.getElementById("previous_page").className = "page-item disabled";
+
+    sessionStorage.setItem("first_sort", sortArray[0]);
+    sessionStorage.setItem("first_dir", sortArray[1]);
+    sessionStorage.setItem("second_sort", sortArray[2]);
+    sessionStorage.setItem("second_dir", sortArray[3]);
+    sessionStorage.setItem("num_results", document.getElementById("num_results").value);
+    sessionStorage.setItem("offset", "0");
+    sessionStorage.setItem("sortedCheck", "yes");
+
+    console.log("PAGE SORTED, SESSION STORED");
+
     sendHttpRequest(newUrl);
 }
 
@@ -293,6 +272,11 @@ function createUrl() {
             movieUrlAddon += "&movie_star=" + movieStar;
     }
     console.log("createUrl = " + movieUrlAddon);
+    sessionStorage.setItem("baseUrl", movieUrlAddon);
+    sessionStorage.setItem("num_results", "25");
+    sessionStorage.setItem("offset", "0");
+    sessionStorage.removeItem("backCheck");
+    sessionStorage.removeItem("sortedCheck");
     return movieUrlAddon;
 }
 
@@ -306,20 +290,18 @@ function sendHttpRequest(url) {
 }
 
 function reloadPaginationInformation(resultDataLength) {
-    let numMoviesRequested = getParameterByName("num_results");
-    console.log("requested number:" + numMoviesRequested);
+    let numMoviesRequested = parseInt(sessionStorage.getItem("num_results"))
+    console.log("requested number: " + numMoviesRequested);
     if (numMoviesRequested != null) {
-        let numMovies = parseInt(numMoviesRequested);
-        if (resultDataLength < numMovies) {
-            console.log("less than " + numMovies.toString() + " results, disable next button");
+        if (resultDataLength < numMoviesRequested) {
+            console.log("less than " + numMoviesRequested + " results, disable next button");
             document.getElementById("next_page").className = "page-item disabled";
+        } else if (numMoviesRequested === resultDataLength) {
+            document.getElementById("next_page").className = "page-item";
         }
 
-        let checkForBack = getParameterByName("back");
-        console.log("backCheck passed");
-        if (checkForBack != null) {
-            let offset = parseInt(getParameterByName("offset"));
-            console.log("url: " + window.location.href);
+        if (sessionStorage.getItem("backCheck") === "yes") {
+            let offset = parseInt(sessionStorage.getItem("offset"));
             console.log("offset: " + offset);
             let newPageNumber = offset + 1;
             console.log("Page Number: " + newPageNumber);
@@ -332,6 +314,8 @@ function reloadPaginationInformation(resultDataLength) {
                 console.log("prev page enabled");
             }
         }
+
+
     } else {
         if (resultDataLength < 25) {
             console.log("less than 25 results, disable next button");
@@ -343,18 +327,22 @@ function reloadPaginationInformation(resultDataLength) {
 
 console.log("1");
 
-if (getParameterByName("back") != null) {
-    console.log("Checking for saved page");
-    if (sessionStorage.getItem("backButtonUrl") != null) {
-        let url = sessionStorage.getItem("backButtonUrl")
-        url = url.split("?")[1];
-        url += "&back=true";
-        console.log("SUCCESS: " + url);
-        sendHttpRequest(url);
-    } else {
-        console.log("no saved page, return to index")
-        window.location.replace("index.html");
-    }
+if (sessionStorage.getItem("backCheck") === "yes") {
+    console.log("backPage was set");
+    //if (sessionStorage.getItem("backCheck") === "yes") {
+    let url = sessionStorage.getItem("baseUrl") +
+        "&num_results=" + sessionStorage.getItem("num_results") +
+        "&offset=" + sessionStorage.getItem("offset") +
+        "&first_sort=" + sessionStorage.getItem("first_sort") +
+        "&first_dir=" + sessionStorage.getItem("first_dir") +
+        "&second_sort=" + sessionStorage.getItem("second_sort") +
+        "&second_dir=" + sessionStorage.getItem("second_dir");
+    console.log("URL AFTER COMING BACK FROM A SINGLE PAGE: " + url);
+    sendHttpRequest(url);
+    //} else {
+    //    console.log("no saved page, return to index")
+    //    window.location.replace("index.html");
+    //}
 } else {
     console.log("Going to createUrl()");
     sendHttpRequest(createUrl());

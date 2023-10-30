@@ -80,7 +80,8 @@ function handleResult(resultData) {
 }
 
 function goBackToSessionPage() {
-    window.location.href = sessionStorage.getItem("backButtonUrl");
+    sessionStorage.setItem("backCheck", "yes");
+    window.location.href = "movie-list.html?" +sessionStorage.getItem("baseUrl");
 }
 
 /**
