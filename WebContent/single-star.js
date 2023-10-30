@@ -79,6 +79,10 @@ function handleResult(resultData) {
     }
 }
 
+function goBackToSessionPage() {
+    window.location.href = sessionStorage.getItem("backButtonUrl");
+}
+
 /**
  * Once this .js is loaded, following scripts will be executed by the browser\
  */

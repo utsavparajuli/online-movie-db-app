@@ -105,6 +105,12 @@ function handleResult(resultData) {
     }
 }
 
+function goBackToSessionPage() {
+    let url = sessionStorage.getItem("backButtonUrl");
+    console.log("back url: " + url)
+    window.location.href = url;
+}
+
 /**
  * Once this .js is loaded, following scripts will be executed by the browser\
  */

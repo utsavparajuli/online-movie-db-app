@@ -61,6 +61,28 @@ function handleGenreResult(resultData) {
     }
 }
 
+function submitSearch() {
+    let movieTitle = document.getElementById("movie_title").value.toString();
+    let movieYear = document.getElementById("movie_year").value.toString();
+    let movieDirector = document.getElementById("movie_director").value.toString();
+    let movieStar = document.getElementById("movie_star").value.toString();
+
+    let url = "movie-list.html?search=true"
+
+    if (movieTitle !== "") {
+        url += "&movie_title=" + movieTitle;
+    }
+    if (movieYear !== "")
+        url += "&movie_year=" + movieYear;
+
+    if (movieDirector !== "")
+        url += "&movie_director=" + movieDirector;
+
+    if (movieStar !== "")
+        url += "&movie_star=" + movieStar;
+
+    window.location.href = url;
+}
 
 /**
  * Once this .js is loaded, following scripts will be executed by the browser

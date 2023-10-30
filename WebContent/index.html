@@ -52,25 +52,25 @@
         <form id="search_form" method="get" action="#">
             <label><b>Title</b></label>
             <label>
-                <input name="movie_title" placeholder="Movie Title" type="text">
+                <input id="movie_title" placeholder="Movie Title" type="text">
             </label>
             <br>
             <label><b>Year</b></label>
             <label>
-                <input name="movie_year" placeholder="Release Year" type="number" maxlength="4" minlength="4">
+                <input id="movie_year" placeholder="Release Year" type="number" maxlength="4" minlength="4">
             </label>
             <br>
             <label><b>Director</b></label>
             <label>
-                <input name="movie_director" placeholder="Director Name" type="text" >
+                <input id="movie_director" placeholder="Director Name" type="text" >
             </label>
             <br>
             <label><b>Star</b></label>
             <label>
-                <input name="movie_star" placeholder="Star Name" type="text" >
+                <input id="movie_star" placeholder="Star Name" type="text" >
             </label>
             <br>
-            <input type="submit" value="Search">
+            <input type="button" value="Search" onclick="submitSearch()">
         </form>
     </div>
     <br>

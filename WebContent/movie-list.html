@@ -12,26 +12,17 @@
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-
-
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
     <link rel="stylesheet" href="style.css" type="text/css">
-
-
     <title>Top 20</title>
     <link rel="icon" href="img/favicon.ico" />
-
-
 </head>
 <body>
-
 <div class="home-image">
     <a href="index.html">
         <img src="img/homepage.png" alt="Homepage" style="width:30px;height:30px;">
@@ -49,7 +40,30 @@
 <h1 class="h1-title padding-header">Results</h1>
 <br>
 
-<!-- Id "star_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
+<div class="container">
+    <form class="form-inline" method="get" action="#">
+        <label for="num_results">Results Per Page: </label>
+        <select id="num_results" class="form-select-sm">
+            <option value="10">10</option>
+            <option selected="selected" value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+        <label for="sort_order">Sort By:</label>
+        <select class="form-select-sm" id="sort_order">
+            <option selected="selected" value="rating DESC title ASC">Rating Desc, Title Asc</option>
+            <option value="rating DESC title DESC">Rating Desc, Title Desc</option>
+            <option value="rating ASC title ASC">Rating Asc, Title Asc</option>
+            <option value="rating ASC title DESC">Rating Asc, Title Desc</option>
+            <option value="title DESC Rating ASC">Title Desc, Rating Asc</option>
+            <option value="title DESC Rating DESC">Title Desc, Rating Desc</option>
+            <option value="title ASC Rating ASC">Title Asc, Rating Asc</option>
+            <option value="title ASC Rating DESC">Title Asc, Rating Desc</option>
+        </select>
+        <input type="button" value="Sort" onclick="submitSort()">
+    </form>
+</div>
+
 <table id=movie_table class="table table-striped align-content-center">
     <!-- Create a table header -->
     <thead>
@@ -68,6 +82,20 @@
     <!-- Again, id "star_table_body" is useful for jQuery to find this html element -->
     <tbody id=movie_list_table_body></tbody>
 </table>
+<div class="container">
+    <ul class="pagination justify-content-center">
+        <li class="page-item disabled" id="previous_page">
+            <a class="page-link" onclick="changePage(-1)" >Prev</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" id="current_page">1</a>
+        </li>
+        <li class="page-item" id="next_page">
+            <a class="page-link" onclick="changePage(1)" >Next</a>
+        </li>
+    </ul>
+</div>
+
 
 <!-- Load jQuery and Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
