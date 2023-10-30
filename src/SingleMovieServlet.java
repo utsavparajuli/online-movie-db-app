@@ -85,8 +85,6 @@ public class SingleMovieServlet extends HttpServlet {
                 jsonObject.addProperty("director", resultSet.getString("director"));
                 jsonObject.addProperty("rating", resultSet.getString("rating"));
 
-                Statement starsStatement = conn.createStatement();
-
                 String starsQuery = "SELECT s.id, s.name, COUNT(DISTINCT sim.movieId) as movieCount " +
                         "FROM stars s, stars_in_movies sim " +
                         "WHERE s.id = sim.starId and s.id IN " +

@@ -33,6 +33,14 @@
     <img src="img/homepage.png" alt="Homepage" style="width:30px;height:30px;">
   </a>
 </div>
+
+<br>
+
+<div class="home-image" style="align-content: end">
+  <a href="cart.html">
+    <img src="img/carts.png" alt="Cart" style="width:30px;height:30px;">
+  </a>
+</div>
 <!--<h1 align="center">Single Movie</h1>-->
 <!--<br>-->
 <!--<br>-->
@@ -42,6 +50,16 @@
 <!-- single-movie.js will find this html element by it's id "movie_info" -->
 <h3 id="movie_info"></h3>
 <br>
+<div align="center">
+  <form ACTION="#" id="cart" METHOD="post">
+    <label id="movie_purchase"></label>
+    <input name='type' type='hidden' value="add">
+    <input type="submit" VALUE="add to cart">
+  </form>
+</div>
+<br>
+
+
 <!--<h3 align="center">Stars</h3>-->
 <input type="button" value="back" onclick="goBackToSessionPage()">
 <table id=movie_table_info class="table table-striped align-content-center">
@@ -83,6 +101,8 @@
 <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
      otherwise the url is relative to the root path-->
 <script src="single-movie.js"></script>
+<script type='text/javascript' src='cart.js'></script>
+
 </body>
 
 

@@ -53,10 +53,8 @@ function handleGenreResult(resultData) {
             + resultData[i]["genre_name"] +     // display star_name for the link text
             '</a>' +
             "</th>";
-        //rowHTML += "<th>" + resultData[i]["star_names"] + "</th>";
         rowHTML += "</tr>";
 
-        // console.log(rowHTML);
 
         // Append the row created to the table body, which will refresh the page
         genreListTableBodyElement.append(rowHTML);
