@@ -57,6 +57,9 @@ public class PaymentServlet extends HttpServlet {
         responseJsonObject.add("previousItems", previousItemsJsonArray);
         responseJsonObject.addProperty("total", price);
 
+        user.setLastPurchaseCost(price);
+        request.getSession().setAttribute("user", user);
+
         response.getWriter().write(responseJsonObject.toString());
         response.setStatus(200);
 

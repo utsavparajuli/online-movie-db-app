@@ -89,48 +89,6 @@ function handleCartArray(resultArray) {
             // Handle the form submission for "cart_2"
             handleCartChange(event);
         });
-        // Event delegation for dynamically added buttons
-        // item_list.on("click", ".add", function () {
-        //     let quantityElement = $(this).closest("tr").find(".quantity");
-        //     let currentQuantity = parseInt(quantityElement.text());
-        //     quantityElement.text(currentQuantity + 1);
-        //     console.log(quantityElement)
-        //
-        //     console.log(cart);
-        //
-        //
-        //     $.ajax("api/cart", {
-        //         method: "POST",
-        //         data: cart.serialize(),
-        //         success: resultDataString => {
-        //             let resultDataJson = JSON.parse(resultDataString);
-        //             handleCartArray(resultDataJson["previousItems"]);
-        //         }
-        //     });
-        // });
-        //
-        // item_list.on("click", ".subtract", function () {
-        //     let quantityElement = $(this).closest("tr").find(".quantity");
-        //     let currentQuantity = parseInt(quantityElement.text());
-        //     if (currentQuantity > 0) {
-        //         quantityElement.text(currentQuantity - 1);
-        //     }
-        //
-        //
-        //
-        //     $.ajax("api/cart", {
-        //         method: "POST",
-        //         data: cart.serialize(),
-        //         success: resultDataString => {
-        //             let resultDataJson = JSON.parse(resultDataString);
-        //             handleCartArray(resultDataJson["previousItems"]);
-        //         }
-        //     });
-        //
-        //     console.log(quantityElement)
-        //
-        // });
-    // });
 }
 
 
@@ -140,15 +98,12 @@ function handleCartArray(resultArray) {
  * @param cartEvent
  */
 function handleCartInfo(cartEvent) {
-    console.log("submit cart form");
-    console.log(cartEvent);
     /**
      * When users click the submit button, the browser will not direct
      * users to the url defined in HTML form. Instead, it will call this
      * event handler when the event is triggered.
      */
     cartEvent.preventDefault();
-    console.log(cart); // Check the value of cart
 
 
     $.ajax("api/cart", {
@@ -156,8 +111,23 @@ function handleCartInfo(cartEvent) {
         data: cart.serialize(),
         success: resultDataString => {
             let resultDataJson = JSON.parse(resultDataString);
-            handleCartArray(resultDataJson["previousItems"]);
-        }
+            $(function() {
+                $("#cart_message").text("Added to cart successfully")
+                $("#btnClose").click(function(evt) {
+                    $("#dvNotify").slideUp('slow');
+                });
+
+                $("#dvNotify").slideDown('slow');
+            });
+            //handleCartArray(resultDataJson["previousItems"]);
+        },
+        error: $(function() {
+            $("#cart_message").text("Not successful adding to cart")
+            $("#btnClose").click(function (evt) {
+                $("#dvNotify").slideUp('slow');
+            });
+            $("#dvNotify").slideDown('slow');
+        })
     });
 
     // clear input form
@@ -167,27 +137,36 @@ function handleCartInfo(cartEvent) {
     }
 }
 
-
 /**
  * Submit form content with POST method
  * @param cartEvent
  */
 function handleCartChange(cartEvent) {
-    console.log("cart change form");
-    console.log(cartEvent);
 
-
-    // cartEvent.preventDefault();
-    console.log(cart_2); // Check the value of cart
-
+    cartEvent.preventDefault();
 
     $.ajax("api/cart", {
         method: "POST",
         data: cart_2.serialize(),
         success: resultDataString => {
             let resultDataJson = JSON.parse(resultDataString);
-            handleCartArray(resultDataJson["previousItems"]);
-        }
+            $(function() {
+                $("#cart_message").text("Cart items changed successfully")
+                $("#btnClose").click(function(evt) {
+                    $("#dvNotify").slideUp('slow');
+                });
+
+                $("#dvNotify").slideDown('slow');
+            });
+            //handleCartArray(resultDataJson["previousItems"]);
+        },
+        error:  $(function() {
+                    $("#cart_message").text("Not successful changing cart items")
+                    $("#btnClose").click(function(evt) {
+                    $("#dvNotify").slideUp('slow');
+                });
+                $("#dvNotify").slideDown('slow');
+        })
     });
 
     // clear input form
@@ -197,9 +176,6 @@ function handleCartChange(cartEvent) {
     }
 }
 
-
-
-
 $.ajax("api/cart", {
     method: "GET",
     success: handleSessionData
@@ -208,13 +184,8 @@ $.ajax("api/cart", {
 // Bind the submit action of the form to a event handler function
 cart.submit(handleCartInfo);
 
-// cart_2.submit(handleCartChange);
 
-
-// Event delegation for dynamically injected form
-// $(document).ready(function() {
-//     // Event delegation for dynamically injected form
-//     $(document).on('submit', '#cart', handleCartInfo);
-// });
-
+$(function() {
+    $("#dvNotify").hide();
+})
 

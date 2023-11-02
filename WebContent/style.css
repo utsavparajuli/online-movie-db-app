@@ -152,6 +152,18 @@ form .txt_field {
     width: 100%;
 }
 
+.notification {
+    background-color: lightYellow;
+    color: red;
+    font-size: 16pt;
+    position: absolute;
+    width: 100%;
+    top: 0;
+    left: 0;
+    text-align: center;
+    padding: 10px;
+}
+
 .home-image img:hover {
     opacity: 0.5;
 }

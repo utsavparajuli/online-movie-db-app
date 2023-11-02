@@ -12,6 +12,18 @@ public class User {
     private String movieId;
     private String movieName;
 
+    public double getLastPurchaseCost() {
+        return lastPurchaseCost;
+    }
+
+    public void setLastPurchaseCost(double lastPurchaseCost) {
+        this.lastPurchaseCost = lastPurchaseCost;
+    }
+
+
+
+    private double lastPurchaseCost;
+
 
     public User(String username) {
         this.username = username;
@@ -33,6 +45,7 @@ public class User {
     public HashMap<String, Movie> getCartItems() {
         return cartItems;
     }
+
 
 
     public String getMovieName() {
