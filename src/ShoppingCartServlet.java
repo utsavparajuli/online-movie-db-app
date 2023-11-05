@@ -1,3 +1,5 @@
+import classes.MovieItem;
+import classes.User;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.servlet.ServletConfig;
@@ -14,9 +16,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -78,7 +78,7 @@ public class ShoppingCartServlet extends HttpServlet {
                         user.getCartItems().get(movieId).setQuantity(user.getCartItems().get(movieId).getQuantity() + 1);
                     }
                     else {
-                        user.addMovie(new Movie(movieId, resultSet.getString("title"),
+                        user.addMovie(new MovieItem(movieId, resultSet.getString("title"),
                                 Double.parseDouble(resultSet.getString("price")), entry.getValue().intValue()));
                     }
 
