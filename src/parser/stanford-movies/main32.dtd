@@ -26,7 +26,7 @@
 <!ELEMENT date >         <!--  Date  first shown, mainly used for Hitchcock TV shows, Format dddmmm -->  
 <!ELEMENT dirs(dir+, diraward+, dirnote? )>   <!--  Comment:   Film-specific director information.   -->  <<maybe>>
           <!ELEMENT> dir(dirk?, dirn) >   <!-- director entry  -->
-         <!ELEMENT dirk>           <!-- If value is R  Director's name in Dirn is canonical and in People.xml file -->
+         <!ELEMENT dirk>           <!-- If value is R  DirectorFilms's name in Dirn is canonical and in People.xml file -->
          <!-- if value is A, that director is an actor, and if value is N, it is not canonical now.  -->
          <!ELEMENT dirn>            <!--  The first name should be redundant with dirn,  If there are multiple                           directors the primary one or the one who finished the movie is listed first. . --> 
           <!ELEMENT diraward >         <!--  awards given the director for this film . --> 
@@ -149,7 +149,7 @@ general common names for countries, major locations: US state names or 2-letter 
 <!ELEMENT notes (crossref?, rating?, money?, facts*, source?) > <!--  A variety of notes is kept.     -->
    <!ELEMENT crossref(reftype?,  refdest, refto) > <!-- crossrefers from film -->
       <!ELEMENT reftype >    <!-- Motivation -->
-      <!ELEMENT refdest >    <!-- destination code, URI or local Film, Director, Studio, Actor  -->
+      <!ELEMENT refdest >    <!-- destination code, URI or local Film, DirectorFilms, Studio, Actor  -->
       <!ELEMENT refto >    <!-- URI or referenced object name -->
    <!ELEMENT  money(budget?,  cost?, inc?, profit?, moneynotes*) > <!-- Information about movie finances -->
       <!ELEMENT  budget > <!--Planned cost of film, by default in US dollars -->

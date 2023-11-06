@@ -1,4 +1,4 @@
-package dto;
+package parser.src.dto;
 
 import java.time.Year;
 import java.util.ArrayList;
@@ -35,6 +35,35 @@ public class Film {
         genres = new ArrayList<>();
     }
 
+    public boolean validGenres() {
+        for (Genre g:
+             genres) {
+            if(!g.isGenreNameValid()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public boolean hasError() {
+        if(id == null || title == null || year == null || director == null) {
+            return true;
+        }
+        else if (!id.matches("^[a-zA-Z0-9]+$")) {
+            return true;
+        }
+        else if (!title.matches("^[a-zA-Z0-9:',!?.()\\-\\s]+$")) {
+            return true;
+        }
+        else if(!director.matches("^[a-zA-Z.'\\-\\s]+$")) {
+            return true;
+        }
+        else if (!validGenres()) {
+            return true;
+        }
+        return false;
+    }
 
     public String getId() {
         return id;
@@ -103,13 +132,22 @@ public class Film {
 
     @Override
     public String toString() {
-        return "Film{" +
-                "id='" + id + '\'' +
-                ", title='" + title + '\'' +
-                ", year=" + year +
-                ", director='" + director + '\'' +
-                ", rating=" + rating +
-                ", genres=" + genres.toString() +
-                '}';
+        return String.format("Film " +
+                "\t%s = %-10s" + // Left-justify id with a width of 10
+                "\t%s = %-50s" + // Left-justify title with a width of 10
+                "\t%s = %-8s" +   // Left-justify year with a width of 10
+                "\t%s = %-20s" + // Left-justify director with a width of 10
+                "\t%s = %.2f" + // Left-justify rating with a width of 10
+                "\t%s = %s" +   // Left-justify genres with a width of 10
+                "", "id", id, "title", title, "year", year, "director", director, "rating", rating, "genres", genres.toString());
+
+//        return "\n\t\tFilm{" +
+//                "\n\t\t\tid='" + id + '\'' +
+//                "\n\t\t\ttitle='" + title + '\'' +
+//                "\n\t\t\tyear=" + year +
+//                "\n\t\t\tdirector='" + director + '\'' +
+//                "\n\t\t\trating=" + rating +
+//                "\n\t\t\tgenres=" + genres.toString() +
+//                "}\n";
     }
 }

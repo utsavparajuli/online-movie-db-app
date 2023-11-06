@@ -1,18 +1,27 @@
-package dto;
+package parser.src.dto;
 
 import java.util.Objects;
 
 public class Genre {
     private String id;
     private String name;
+    private boolean isValid;
 
     public Genre() {
+        isValid = true;
     }
 
     public Genre(String id, String name) {
         this.id = id;
         this.name = name;
+        isValid = true;
     }
+
+
+    public boolean isGenreNameValid() {
+        return this.name.matches("^[a-zA-Z\\s\\-]+$");
+    }
+
 
     public String getId() {
         return id;
@@ -32,10 +41,8 @@ public class Genre {
 
     @Override
     public String toString() {
-        return "Genre{" +
-                "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                '}';
+        return "" +
+                "'" + name + "', ";
     }
 
     @Override
@@ -50,6 +57,4 @@ public class Genre {
     public int hashCode() {
         return Objects.hash(getId(), getName());
     }
-
-
 }
