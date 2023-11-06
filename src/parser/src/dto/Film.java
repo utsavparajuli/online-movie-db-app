@@ -14,6 +14,13 @@ public class Film {
     private List<Genre> genres;
 
     public Film() {
+        year = null;
+        genres = new ArrayList<>();
+    }
+
+    public Film(String id) {
+        this.id = id;
+        year = null;
         genres = new ArrayList<>();
     }
 
