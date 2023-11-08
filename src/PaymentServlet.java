@@ -88,7 +88,6 @@ public class PaymentServlet extends HttpServlet {
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
-
             // Perform the query
             ResultSet rs = statement.executeQuery();
 

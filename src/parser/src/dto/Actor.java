@@ -50,7 +50,12 @@ public class Actor {
     }
 
     public Year getBirthYear() {
-        return birthYear;
+        if (birthYear == null) {
+            return Year.parse("0000");
+        }
+        else {
+            return birthYear;
+        }
     }
 
     public void setBirthYear(Year birthYear) {

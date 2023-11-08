@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Year;
@@ -23,11 +24,12 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.DefaultHandler;
+import parser.src.utilities.RandomNumberGenerator;
 
 public class SAXParserTool extends DefaultHandler {
 
     private Map<String,Film> filmMap;
-    private Map<UUID, Actor> actorMap;
+    private Map<String, Actor> actorMap;
     private Map<Film, List<Actor>> stars_in_movies_map;
 
     private String tempVal;
@@ -70,7 +72,7 @@ public class SAXParserTool extends DefaultHandler {
         printMovieData();
         printActorData();
         printCastInfo();
-        updateDatabase();
+        //updateDatabase();
         movieInconsistencyReport.close();
         actorInconsistencyReport.close();
         System.out.println("Inconsistent movies = " + incMoviesCount);
@@ -81,12 +83,22 @@ public class SAXParserTool extends DefaultHandler {
 
     private void updateDatabase() {
         try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
-            Connection conn = dataSource.getConnection();
-            //insetFilmsToDb(conn);
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            Connection conn = DriverManager.getConnection("jdbc:" + Parameters.dbtype + ":///" +
+                                                                Parameters.dbname + "?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false",
+                                                                Parameters.username, Parameters.password);
+
+//            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+//            Connection conn = dataSource.getConnection();
+
+
+            insetFilmsToDb(conn);
             insertActorsToDb(conn);
-            //insetStarsInMoviesDb(conn);
-        } catch (NamingException | SQLException e) {
+            insetStarsInMoviesDb(conn);
+            conn.close();
+
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -100,8 +112,8 @@ public class SAXParserTool extends DefaultHandler {
         String actorEntry = "INSERT INTO stars VALUES (?, ?, ?);";
 
         try (PreparedStatement insertStatement = c.prepareStatement(actorEntry)){
-            for (Map.Entry<UUID, Actor> entry : actorMap.entrySet()) {
-                UUID actorId = entry.getKey();
+            for (Map.Entry<String, Actor> entry : actorMap.entrySet()) {
+                String actorName = entry.getKey();
                 Actor actorValue = entry.getValue();
 
                 if(batchSize == 500) {
@@ -111,12 +123,16 @@ public class SAXParserTool extends DefaultHandler {
                     insertStatement.clearBatch();
                 }
 
-                insertStatement.setString(1, actorId.toString().substring(0,9));
+                insertStatement.setString(1, actorValue.getId().toString().substring(0,8));
                 insertStatement.setString(2, actorValue.getName());
-                insertStatement.setString(3, String.valueOf(actorValue.getBirthYear().getValue()));
-
+                insertStatement.setInt(3, actorValue.getBirthYear().getValue());
+                insertStatement.addBatch();
                 batchSize++;
             }
+
+            int[] result = insertStatement.executeBatch();
+            System.out.println(Arrays.toString(result));
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -124,6 +140,38 @@ public class SAXParserTool extends DefaultHandler {
     }
 
     private void insetFilmsToDb(Connection c) {
+        int batchSize = 0;
+        String filmEntry = "INSERT INTO movies VALUES (?, ?, ?, ?, ?);";
+
+        try (PreparedStatement filmInsertStatement = c.prepareStatement(filmEntry)){
+            for (Map.Entry<String, Film> entry : filmMap.entrySet()) {
+                String filmId = entry.getKey();
+                Film filmValue = entry.getValue();
+
+                if(batchSize == 500) {
+                    int[] result = filmInsertStatement.executeBatch();
+                    System.out.println(Arrays.toString(result));
+                    batchSize = 0;
+                    filmInsertStatement.clearBatch();
+                }
+
+                filmInsertStatement.setString(1, filmValue.getId());
+                filmInsertStatement.setString(2, filmValue.getTitle());
+                filmInsertStatement.setInt(3, filmValue.getYear().getValue());
+                filmInsertStatement.setString(4, filmValue.getDirector());
+                filmInsertStatement.setFloat(5, RandomNumberGenerator.getPriceForMovies());
+
+                filmInsertStatement.addBatch();
+                batchSize++;
+            }
+
+            int[] result = filmInsertStatement.executeBatch();
+            System.out.println(Arrays.toString(result));
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("inserted into movies table");
     }
 
     private void parseMovies() {
@@ -293,7 +341,7 @@ public class SAXParserTool extends DefaultHandler {
             }
         }
         else if (qName.equalsIgnoreCase("actor")) {     //actor adding to list
-            if (getActorByName(tempActor.getName()) != null) {
+            if (actorMap.containsKey(tempActor.getName())) {
                 actorInconsistencyReport.println("DUPLICATE     " + tempActor.toString());
                 incActorsCount++;
             }
@@ -302,7 +350,7 @@ public class SAXParserTool extends DefaultHandler {
                 incActorsCount++;
             }
             else {
-                actorMap.put(tempActor.getId(), tempActor);
+                actorMap.put(tempActor.getName(), tempActor);
             }
         }
         else if (qName.equalsIgnoreCase("f")) {
@@ -312,11 +360,10 @@ public class SAXParserTool extends DefaultHandler {
             tempActor.setName(tempVal);
         }
         else if (qName.equalsIgnoreCase("m")) {
-            if (filmMap.containsKey(tempFilm.getId()) && getActorByName(tempActor.getName()) != null){
-                var actor = getActorByName(tempActor.getName());
-                tempActorListForMovie.add(actor);
+            if (filmMap.containsKey(tempFilm.getId()) && actorMap.containsKey(tempActor.getName())){
+                tempActorListForMovie.add(actorMap.get(tempActor.getName()));
             }
-            else if (getActorByName(tempActor.getName()) == null) {
+            else if (!actorMap.containsKey(tempActor.getName())) {
                 actorInconsistencyReport.println("ACTOR DNE    " + tempActor.toString());
                 incActorsCount++;
             }
@@ -330,17 +377,9 @@ public class SAXParserTool extends DefaultHandler {
         }
     }
 
-    public Actor getActorByName(String name) {
-        for (Map.Entry<UUID, Actor> entry : actorMap.entrySet()) {
-            if (entry.getValue().getName().equals(name)) {
-                return entry.getValue();
-            }
-        }
-        return null; // Return null if the value is not found
-    }
-
     public static void main(String[] args) {
         SAXParserTool spe = new SAXParserTool();
+
         spe.runParser();
     }
 
