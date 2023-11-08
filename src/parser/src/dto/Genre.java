@@ -1,17 +1,22 @@
 package parser.src.dto;
 
+import com.mysql.cj.conf.ConnectionUrlParser;
+
+import java.util.Map;
 import java.util.Objects;
 
 public class Genre {
-    private String id;
+    private int id;
     private String name;
     private boolean isValid;
+
+
 
     public Genre() {
         isValid = true;
     }
 
-    public Genre(String id, String name) {
+    public Genre(int id, String name) {
         this.id = id;
         this.name = name;
         isValid = true;
@@ -23,11 +28,12 @@ public class Genre {
     }
 
 
-    public String getId() {
+
+    public int getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -41,8 +47,7 @@ public class Genre {
 
     @Override
     public String toString() {
-        return "" +
-                "'" + name + "', ";
+        return id + "-" + name;
     }
 
     @Override

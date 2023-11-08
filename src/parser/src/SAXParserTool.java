@@ -10,8 +10,6 @@ import java.sql.SQLException;
 import java.time.Year;
 import java.util.*;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -24,13 +22,15 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import org.xml.sax.helpers.DefaultHandler;
-import parser.src.utilities.RandomNumberGenerator;
+import parser.src.utilities.Utility;
 
 public class SAXParserTool extends DefaultHandler {
 
     private Map<String,Film> filmMap;
     private Map<String, Actor> actorMap;
     private Map<Film, List<Actor>> stars_in_movies_map;
+    private Map<String, Integer> genreIdMap;
+    private List<Genre> newGenres;
 
     private String tempVal;
     private Film tempFilm;
@@ -42,37 +42,61 @@ public class SAXParserTool extends DefaultHandler {
     private PrintWriter movieInconsistencyReport;
     private PrintWriter actorInconsistencyReport;
 
+    Connection conn;
     private SAXParserFactory spf;
     private SAXParser sp;
 
     private int incMoviesCount;
     private int incActorsCount;
 
-    private DataSource dataSource;
+    private int lastGenreId = 0;
 
     public SAXParserTool() {
         spf = SAXParserFactory.newInstance();
         filmMap = new HashMap<>();
         actorMap = new HashMap<>();
         stars_in_movies_map = new HashMap<>();
+        genreIdMap = new HashMap<>();
+        newGenres = new ArrayList<>();
 
+        System.out.println("read genre data from table");
         try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:" + Parameters.dbtype + ":///" +
+                            Parameters.dbname + "?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false",
+                    Parameters.username, Parameters.password);
+
+            String query = "SELECT * FROM genres;";
+            PreparedStatement filmInsertStatement = conn.prepareStatement(query);
+            var rs = filmInsertStatement.executeQuery();
+            while (rs.next()) {
+                genreIdMap.put(rs.getString("name"), Integer.parseInt(rs.getString("id")));
+                if(Integer.parseInt(rs.getString("id")) > lastGenreId) {
+                    lastGenreId = Integer.parseInt(rs.getString("id"));
+                }
+            }
+            filmInsertStatement.close();
+            rs.close();
+            //end of db code to extract genres
+
             sp = spf.newSAXParser();
             movieInconsistencyReport = new PrintWriter("src/parser/out/movie_inconsistency.txt", StandardCharsets.UTF_8);
             actorInconsistencyReport = new PrintWriter("src/parser/out/actor_inconsistency.txt", StandardCharsets.UTF_8);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+        } catch (ParserConfigurationException | SAXException | IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
     }
 
     public void runParser() {
+        System.out.println(genreIdMap.toString());
         parseMovies();
         parseActors();
         parseMovieCast();
         printMovieData();
         printActorData();
         printCastInfo();
-        //updateDatabase();
+        System.out.println(newGenres.toString());
+
         movieInconsistencyReport.close();
         actorInconsistencyReport.close();
         System.out.println("Inconsistent movies = " + incMoviesCount);
@@ -83,22 +107,12 @@ public class SAXParserTool extends DefaultHandler {
 
     private void updateDatabase() {
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            Connection conn = DriverManager.getConnection("jdbc:" + Parameters.dbtype + ":///" +
-                                                                Parameters.dbname + "?allowPublicKeyRetrieval=true&autoReconnect=true&useSSL=false",
-                                                                Parameters.username, Parameters.password);
-
-//            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
-//            Connection conn = dataSource.getConnection();
-
-
             insetFilmsToDb(conn);
             insertActorsToDb(conn);
             insetStarsInMoviesDb(conn);
             conn.close();
 
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -159,7 +173,7 @@ public class SAXParserTool extends DefaultHandler {
                 filmInsertStatement.setString(2, filmValue.getTitle());
                 filmInsertStatement.setInt(3, filmValue.getYear().getValue());
                 filmInsertStatement.setString(4, filmValue.getDirector());
-                filmInsertStatement.setFloat(5, RandomNumberGenerator.getPriceForMovies());
+                filmInsertStatement.setFloat(5, Utility.getPriceForMovies());
 
                 filmInsertStatement.addBatch();
                 batchSize++;
@@ -310,8 +324,23 @@ public class SAXParserTool extends DefaultHandler {
             tempFilm.setDirector(tempVal);
         }
         else if (qName.equalsIgnoreCase("cat")) {
-            tempGenre.setName(tempVal);
-            tempFilm.addGenre(tempGenre);
+            var genreName = Utility.getFullGenre(tempVal);
+            if(genreName != null) {
+                tempGenre.setName(genreName);
+
+                if(genreIdMap.containsKey(genreName)) {
+                    tempGenre.setId(genreIdMap.get(genreName));
+                }
+                else {
+                    ++lastGenreId;
+                    genreIdMap.put(genreName, lastGenreId);
+                    tempGenre.setId(lastGenreId);
+                    newGenres.add(tempGenre);
+                }
+
+                tempFilm.addGenre(tempGenre);
+            }
+
         }
         else if (qName.equalsIgnoreCase("film")) {      //Movie enter
             if (filmMap.containsKey(tempFilm.getId())) {
