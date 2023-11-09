@@ -1,3 +1,5 @@
+import classes.MovieItem;
+import classes.User;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.servlet.ServletConfig;
@@ -41,7 +43,7 @@ public class PaymentServlet extends HttpServlet {
         User       user = (User) request.getSession().getAttribute("user");
         double     price = 0;
 
-        for (Map.Entry<String, Movie> entry : user.getCartItems().entrySet()) {
+        for (Map.Entry<String, MovieItem> entry : user.getCartItems().entrySet()) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("movie_id", entry.getValue().getId());
             jsonObject.addProperty("movie_title", entry.getValue().getTitle());
@@ -86,7 +88,6 @@ public class PaymentServlet extends HttpServlet {
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
-
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
