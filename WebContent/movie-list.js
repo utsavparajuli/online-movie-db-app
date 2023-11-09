@@ -85,6 +85,8 @@ function handleResult(resultData) {
                 rowHTML += ", ";
             }
         }
+        let noStars = false;
+        let starsNotAvailable = true;
         rowHTML = rowHTML.substring(0, rowHTML.length - 2);
         rowHTML += "</th><th>";
         for (let j = 0; j < 3; j++) {
@@ -92,7 +94,15 @@ function handleResult(resultData) {
                 rowHTML += '<a href="single-star.html?id=' + resultData[i]["stars"][j]["id"] +
                     '">' + resultData[i]["stars"][j]["name"] + '</a>';
                 rowHTML += ", ";
+                starsNotAvailable = false;
             }
+            else {
+                noStars = true;
+            }
+        }
+
+        if(noStars && starsNotAvailable) {
+            rowHTML += "N/A  ";
         }
         rowHTML = rowHTML.substring(0, rowHTML.length - 2);
         rowHTML += "</th>";
