@@ -29,16 +29,8 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
-//    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-//        PrintWriter out = response.getWriter();
-//
-//
-//        out.close();
-//    }
-
-
     /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+     * @see HttpServlet#doPost(HttpServletRequest, HttpServletResponse)
      */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String username = request.getParameter("username");
@@ -83,17 +75,13 @@ public class LoginServlet extends HttpServlet {
             }
             rs.close();
             statement.close();
-//            response.setStatus(200);
+            response.setStatus(200);
             response.getWriter().write(responseJsonObject.toString());
 
 
         } catch (Exception e) {
             // Write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
-//            out.println("<p>recaptcha verification error</p>");
-//            out.println("<p>" + e.getMessage() + "</p>");
-//            out.close();
-//            return;
             jsonObject.addProperty("message", e.getMessage());
             out.write(jsonObject.toString());
 

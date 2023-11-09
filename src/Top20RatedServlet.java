@@ -46,8 +46,6 @@ public class Top20RatedServlet extends HttpServlet {
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
 
-            // Declare our statement
-            Statement statement = conn.createStatement();
 
             // Query that selects the top 20 movies by rating
             String query = "SELECT m.id, m.title, m.year, m.director, r.rating " +
@@ -57,8 +55,10 @@ public class Top20RatedServlet extends HttpServlet {
                     "ORDER BY r.rating DESC " +
                     "LIMIT 20;";
 
+            PreparedStatement statement = conn.prepareStatement(query);
+
             // Perform the query
-            ResultSet resultSet  = statement.executeQuery(query);
+            ResultSet resultSet  = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
@@ -127,7 +127,7 @@ public class Top20RatedServlet extends HttpServlet {
                 }
             }
 
-            resultSet .close();
+            resultSet.close();
             statement.close();
 
             // Log to localhost log
