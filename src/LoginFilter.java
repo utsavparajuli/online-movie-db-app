@@ -51,6 +51,7 @@ public class LoginFilter implements Filter {
         allowedURIs.add("login.js");
         allowedURIs.add("api/login");
         allowedURIs.add("style.css");
+        allowedURIs.add("img/");
 
     }
 

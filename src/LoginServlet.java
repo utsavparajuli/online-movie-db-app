@@ -1,3 +1,4 @@
+import classes.RecaptchaVerifyUtils;
 import classes.User;
 import com.google.gson.JsonObject;
 import jakarta.servlet.ServletConfig;
@@ -28,6 +29,14 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
+//    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+//        PrintWriter out = response.getWriter();
+//
+//
+//        out.close();
+//    }
+
+
     /**
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
@@ -35,12 +44,17 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
+        String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
+        System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
+
         JsonObject responseJsonObject = new JsonObject();
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         try (Connection conn = dataSource.getConnection()) {
+            RecaptchaVerifyUtils.verify(gRecaptchaResponse);
+
             String query = String.format("SELECT * FROM customers as c WHERE c.email = '%s' AND c.password = '%s'",
                                         username, password);
 
@@ -76,13 +90,17 @@ public class LoginServlet extends HttpServlet {
         } catch (Exception e) {
             // Write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("errorMessage", e.getMessage());
+//            out.println("<p>recaptcha verification error</p>");
+//            out.println("<p>" + e.getMessage() + "</p>");
+//            out.close();
+//            return;
+            jsonObject.addProperty("message", e.getMessage());
             out.write(jsonObject.toString());
 
             // Log error to localhost log
             request.getServletContext().log("Error:", e);
             // Set response status to 500 (Internal Server Error)
-            response.setStatus(500);
+            //response.setStatus(500);
         } finally {
             out.close();
         }
