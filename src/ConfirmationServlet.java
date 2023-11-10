@@ -23,7 +23,6 @@ public class ConfirmationServlet extends HttpServlet {
     private DataSource dataSource;
 
     public void init(ServletConfig config) {
-        //this.nameAttribute = new SessionAttribute<>(String.class, "name");
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
         } catch (NamingException e) {

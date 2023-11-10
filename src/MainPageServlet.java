@@ -47,15 +47,16 @@ public class MainPageServlet extends HttpServlet {
         try (Connection conn = dataSource.getConnection()) {
 
             // Declare our statement
-            Statement statement = conn.createStatement();
+//            Statement statement = conn.createStatement();
 
             // Query that selects the top 20 movies by rating
             String query = "SELECT G.id, G.name " +
                     "FROM genres G " +
                     "ORDER BY G.name ASC; ";
 
+            PreparedStatement statement = conn.prepareStatement(query);
             // Perform the query
-            ResultSet resultSet  = statement.executeQuery(query);
+            ResultSet resultSet  = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
@@ -70,7 +71,7 @@ public class MainPageServlet extends HttpServlet {
                 jsonArray.add(jsonObject);
             }
 
-            resultSet .close();
+            resultSet.close();
             statement.close();
 
             // Log to localhost log

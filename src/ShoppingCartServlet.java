@@ -164,18 +164,6 @@ public class ShoppingCartServlet extends HttpServlet {
                 previousItems.remove(item);
             }
         }
-
-//        if (previousItems == null) {
-//            previousItems = new ArrayList<String>();
-//            previousItems.add(item);
-//            session.setAttribute("previousItems", previousItems);
-//        } else {
-//            // prevent corrupted states through sharing under multi-threads
-//            // will only be executed by one thread at a time
-//            synchronized (previousItems) {
-//                previousItems.add(item);
-//            }
-//        }
         JsonObject responseJsonObject = new JsonObject();
 
         JsonArray previousItemsJsonArray = new JsonArray();

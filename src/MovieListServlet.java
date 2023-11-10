@@ -125,14 +125,12 @@ public class MovieListServlet extends HttpServlet {
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
 
-            // Declare our statement
-            Statement statement = conn.createStatement();
-
             String query = getQueryString(sessionParameters);
             request.getServletContext().log("\n\nSQL query: " + query);
 
             // Perform the query
-            ResultSet resultSet  = statement.executeQuery(query);
+            PreparedStatement statement = conn.prepareStatement(query);
+            ResultSet resultSet  = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
@@ -201,7 +199,7 @@ public class MovieListServlet extends HttpServlet {
                     genreResultSet.close();
                 }
             }
-            resultSet .close();
+            resultSet.close();
             statement.close();
 
             // Log to localhost log
