@@ -15,6 +15,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import org.jasypt.util.password.PasswordEncryptor;
+import org.jasypt.util.password.StrongPasswordEncryptor;
+
 @WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
 public class LoginServlet extends HttpServlet {
 
@@ -35,6 +38,7 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        PasswordEncryptor passwordEncryptor = new StrongPasswordEncryptor();
 
         String gRecaptchaResponse = request.getParameter("g-recaptcha-response");
         System.out.println("gRecaptchaResponse=" + gRecaptchaResponse);
@@ -47,30 +51,33 @@ public class LoginServlet extends HttpServlet {
         try (Connection conn = dataSource.getConnection()) {
             RecaptchaVerifyUtils.verify(gRecaptchaResponse);
 
-            String query = String.format("SELECT * FROM customers as c WHERE c.email = '%s' AND c.password = '%s'",
-                                        username, password);
+            String query = "SELECT c.id, c.password FROM customers as c WHERE c.email = ?;";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
+            statement.setString(1, username);
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
+            boolean success = false;
 
-            // TODO: check if it is null
             if (rs.next()) {
-                // set this user into the session
-                request.getSession().setAttribute("user", new User(username));
-                request.getSession().setAttribute("customerId", rs.getString("id"));
+                String encryptedPassword = rs.getString("password");
+                success = new StrongPasswordEncryptor().checkPassword(password, encryptedPassword);
+                if (success) {
+                    request.getSession().setAttribute("user", new User(username));
+                    request.getSession().setAttribute("customerId", rs.getString("id"));
+                    responseJsonObject.addProperty("status", "success");
+                    responseJsonObject.addProperty("message", "success");
+                } else {
+                    responseJsonObject.addProperty("status", "fail");
+                    request.getServletContext().log("Login failed");
+                    responseJsonObject.addProperty("message", "Incorrect username/password");
+                }
 
-                responseJsonObject.addProperty("status", "success");
-                responseJsonObject.addProperty("message", "success");
-            }
-            else {
+            } else {
                 responseJsonObject.addProperty("status", "fail");
-                // Log to localhost log
                 request.getServletContext().log("Login failed");
-
-                // sample error messages. in practice, it is not a good idea to tell user which one is incorrect/not exist.
                 responseJsonObject.addProperty("message", "Incorrect username/password");
             }
             rs.close();
