@@ -77,3 +77,10 @@ CREATE TABLE ratings (
     numVotes integer NOT NULL,
     FOREIGN KEY (movieID) REFERENCES movies(id) ON DELETE CASCADE
 );
+
+CREATE TABLE employees
+(
+    email    varchar(50) PRIMARY KEY,
+    password varchar(128) NOT NULL,
+    fullname varchar(100)
+);
