@@ -281,13 +281,21 @@ function createUrl() {
         if (movieStar != null)
             movieUrlAddon += "&movie_star=" + movieStar;
     }
+    updateSessionStorage(movieUrlAddon);
+    return movieUrlAddon;
+}
+
+function updateSessionStorage(movieUrlAddon) {
     console.log("createUrl = " + movieUrlAddon);
     sessionStorage.setItem("baseUrl", movieUrlAddon);
     sessionStorage.setItem("num_results", "25");
     sessionStorage.setItem("offset", "0");
+    sessionStorage.setItem("first_sort", "rating");
+    sessionStorage.setItem("first_dir", "DESC");
+    sessionStorage.setItem("second_sort", "title");
+    sessionStorage.setItem("second_dir", "ASC");
     sessionStorage.removeItem("backCheck");
     sessionStorage.removeItem("sortedCheck");
-    return movieUrlAddon;
 }
 
 function sendHttpRequest(url) {
@@ -335,7 +343,7 @@ function reloadPaginationInformation(resultDataLength) {
 }
 
 
-console.log("1");
+sessionStorage.removeItem("prevPage");
 
 if (sessionStorage.getItem("backCheck") === "yes") {
     console.log("backPage was set");

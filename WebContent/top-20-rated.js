@@ -39,8 +39,23 @@ function handleStarResult(resultData) {
         rowHTML += "<th>" + resultData[i]["rating"] + "</th>" + "</tr>";
         movieListTableBodyElement.append(rowHTML);
     }
-    sessionStorage.setItem("backButtonUrl", "top-20-rated.html");
 }
+
+function removeStoredSessionInfo() {
+    sessionStorage.removeItem("num_results");
+    sessionStorage.removeItem("offset");
+    sessionStorage.removeItem("sortedCheck");
+    sessionStorage.removeItem("backCheck");
+    sessionStorage.removeItem("baseUrl");
+    sessionStorage.removeItem("first_sort");
+    sessionStorage.removeItem("first_dir");
+    sessionStorage.removeItem("second_sort");
+    sessionStorage.removeItem("second_dir");
+}
+
+removeStoredSessionInfo();
+sessionStorage.setItem("prevPage", "top20");
+console.log("check: " + sessionStorage.getItem("prevPage"))
 
 /**
  * Once this .js is loaded, following scripts will be executed by the browser

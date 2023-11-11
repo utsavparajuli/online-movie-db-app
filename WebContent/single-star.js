@@ -80,8 +80,14 @@ function handleResult(resultData) {
 }
 
 function goBackToSessionPage() {
-    sessionStorage.setItem("backCheck", "yes");
-    window.location.href = "movie-list.html?" +sessionStorage.getItem("baseUrl");
+    if (sessionStorage.getItem("prevPage") !== null) {
+        sessionStorage.removeItem("prevPage");
+        window.location.href = "top-20-rated.html";
+    }
+    else {
+        sessionStorage.setItem("backCheck", "yes");
+        window.location.href = "movie-list.html?" + sessionStorage.getItem("baseUrl");
+    }
 }
 
 /**
@@ -90,6 +96,7 @@ function goBackToSessionPage() {
 
 // Get id from URL
 let starId = getParameterByName('id');
+console.log("check2: " + sessionStorage.getItem("prevPage"));
 
 // Makes the HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({

@@ -61,11 +61,25 @@ function handleGenreResult(resultData) {
     }
 }
 
+function updateStoredSessionInfo() {
+    sessionStorage.removeItem("num_results");
+    sessionStorage.removeItem("offset");
+    sessionStorage.removeItem("sortedCheck");
+    sessionStorage.removeItem("backCheck");
+    sessionStorage.removeItem("baseUrl");
+    sessionStorage.removeItem("first_sort");
+    sessionStorage.removeItem("first_dir");
+    sessionStorage.removeItem("second_sort");
+    sessionStorage.removeItem("second_dir");
+    sessionStorage.removeItem("prevPage")
+}
+
 function submitSearch() {
     let movieTitle = document.getElementById("movie_title").value.toString();
     let movieYear = document.getElementById("movie_year").value.toString();
     let movieDirector = document.getElementById("movie_director").value.toString();
     let movieStar = document.getElementById("movie_star").value.toString();
+
 
     let url = "movie-list.html?search=true"
 
@@ -87,6 +101,7 @@ function submitSearch() {
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
+updateStoredSessionInfo();
 
 // Makes the HTTP GET request and registers on success callback function handleStarResult
 jQuery.ajax({
