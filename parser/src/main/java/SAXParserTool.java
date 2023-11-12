@@ -64,8 +64,8 @@ public class SAXParserTool extends DefaultHandler {
                     Parameters.username, Parameters.password);
             loadExistingGenresFromDatabase(conn);
 
-            movieInconsistencyReport = new PrintWriter("out/movie_inconsistency.txt", StandardCharsets.UTF_8);
-            actorInconsistencyReport = new PrintWriter("out/actor_inconsistency.txt", StandardCharsets.UTF_8);
+            movieInconsistencyReport = new PrintWriter("movie_inconsistency.txt", StandardCharsets.UTF_8);
+            actorInconsistencyReport = new PrintWriter("actor_inconsistency.txt", StandardCharsets.UTF_8);
         } catch (ParserConfigurationException | SAXException | IOException | ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -299,7 +299,7 @@ public class SAXParserTool extends DefaultHandler {
 
     private void printMovieData() {
         try {
-            outputWriter = new PrintWriter("out/movies.txt", StandardCharsets.UTF_8);
+            outputWriter = new PrintWriter("movies.txt", StandardCharsets.UTF_8);
             outputWriter.println("No. of Films read '" + filmMap.size() + "'.");
             System.out.println("Movies stored = " + filmMap.size());
             for (Film film : filmMap.values()) {
@@ -314,7 +314,7 @@ public class SAXParserTool extends DefaultHandler {
 
     private void printActorData() {
         try {
-            outputWriter = new PrintWriter("out/actors.txt", StandardCharsets.UTF_8);
+            outputWriter = new PrintWriter("actors.txt", StandardCharsets.UTF_8);
             outputWriter.println("No of Actors read '" + actorMap.size() + "'.");
             System.out.println("Actors stored = " + actorMap.size());
 
@@ -330,7 +330,7 @@ public class SAXParserTool extends DefaultHandler {
 
     private void printCastInfo() {
         try {
-            outputWriter = new PrintWriter("out/stars_in_movies.txt", StandardCharsets.UTF_8);
+            outputWriter = new PrintWriter("stars_in_movies.txt", StandardCharsets.UTF_8);
             outputWriter.println("No of Movies-Actors map read '" + stars_in_movies_map.size() + "'.");
             System.out.println("Movie-Actors stored = " + stars_in_movies_map.size());
 
