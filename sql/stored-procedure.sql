@@ -67,21 +67,3 @@ BEGIN
 END
 //
 DELIMITER ;
--- CALL set_genre('Genre1','tt0499470');
-
-
-
---CALL get_table_metadata;
---CREATE PROCEDURE get_table_metadata ()
---SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
---FROM INFORMATION_SCHEMA.COLUMNS
---WHERE table_schema = 'moviedb'
---ORDER BY table_name ASC;
---USE moviedb;
-
-
---CREATE TABLE maxidhelper(maxMovieId INTEGER, maxStarId INTEGER);
---CREATE PROCEDURE get_max_int(IN select INTEGER)
---INSERT INTO maxidhelper VALUES(0499469, 9423083);
---CALL updateMaxIds(1);
---SELECT * FROM maxidhelper;
