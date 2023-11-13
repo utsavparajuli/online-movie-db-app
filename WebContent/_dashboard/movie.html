@@ -15,6 +15,7 @@
             <img src="../img/homepage.png" alt="Homepage" style="width:30px;height:30px;">
         </a>
     </div>
+    <br>
 
     <div class="submitMovie">
         <header>Add New Movie</header>
@@ -25,28 +26,29 @@
                 </label>
             </div>
             <div class="input-box">
-                <label>Star Year
+                <label>Director
+                    <input name="movie_director" placeholder="Director" type="text" required>
+                </label>
+            </div>
+            <div class="input-box">
+                <label>Movie Year
                     <input name="movie_year" placeholder="Year" type="number" required>
                 </label>
             </div>
             <div class="input-box">
-                <label>Director
-                    <input name="director" placeholder="Director" type="text" required>
+                <label> Genre
+                    <input name="movie_genre" placeholder="Genre" type="text" required>
                 </label>
             </div>
             <div class="input-box">
                 <label>Star Name
-                    <input name="movie_star_name" placeholder="Star Name" type="text" required>
+                    <input name="movie_star" placeholder="Star Name" type="text" required>
                 </label>
             </div>
-            <div class="input-box">
-                <label> Genre
-                    <input name="genre" placeholder="Genre" type="text" required>
-                </label>
-            </div>
-            <input type="button"  class="btn btn-default" value="Submit" onclick="handleStarSubmit()">
+            <input type="submit"  class="btn btn-default" value="Submit">
         </form>
     </div>
+    <div id="movie_submit_message"></div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="movie.js"></script>
 </body>
