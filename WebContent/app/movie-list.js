@@ -29,38 +29,6 @@ function addToCartFromList(movieId) {
     console.log(movieId);
 }
 
-// /**
-//  * Submit form content with POST method
-//  * @param cartEvent
-//  */
-// function addToCart(cartEvent) {
-//     console.log("submit cart form from movie-list");
-//     console.log(cartEvent);
-//     /**
-//      * When users click the submit button, the browser will not direct
-//      * users to the url defined in HTML form. Instead, it will call this
-//      * event handler when the event is triggered.
-//      */
-//     cartEvent.preventDefault();
-//     console.log(cart); // Check the value of cart
-//
-//
-//     $.ajax("api/cart", {
-//         method: "POST",
-//         data: cart.serialize(),
-//         success: resultDataString => {
-//             let resultDataJson = JSON.parse(resultDataString);
-//             handleCartArray(resultDataJson["previousItems"]);
-//         }
-//     });
-//
-//     // clear input form
-//     // Clear input form sif cart is defined
-//     if (cart) {
-//         cart[0].reset();
-//     }
-// }
-
 function handleResult(resultData) {
     console.log("handleResult: populating movieList table from resultData");
     console.log(resultData);
@@ -196,39 +164,6 @@ function changePage(pageDirection) {
     window.scrollTo({top: 0, behavior: "smooth"});
     sendHttpRequest(newUrl);
 }
-
-/*
-function goToNextPage() {
-    let currentPageNumber = parseInt(document.getElementById("current_page").innerText);
-    $("#current_page").text(currentPageNumber + 1);
-    document.getElementById("previous_page").className = "page-item";
-    let newUrl = generateUrl();
-    window.scrollTo({top: 0, behavior: "smooth"});
-    sendHttpRequest(newUrl);
-}
-
-function goToPreviousPage() {
-    let currentPageNumber = parseInt(document.getElementById("current_page").innerText);
-    $("#current_page").text(currentPageNumber - 1);
-    if (currentPageNumber - 1 === 1) {
-        document.getElementById("previous_page").className = "page-item disabled";
-    }
-    document.getElementById("next_page").className = "page-item";
-    let currentUrl = window.location.href.split("?")[1];
-    console.log("current url: " + currentUrl);
-    let newUrl = currentUrl + "&num_results=" + document.getElementById("num_results").value;
-    newUrl += "&offset=" + (currentPageNumber - 2).toString();
-    let sortArray = document.getElementById("sort_order").value.split(" ");
-    newUrl += "&first_sort=" + sortArray[0] +
-        "&first_dir=" + sortArray[1] +
-        "&second_sort=" + sortArray[2] +
-        "&second_dir=" + sortArray[3] +
-        "&back=true";
-    console.log("new url: " + newUrl);
-    window.scrollTo({top: 0, behavior: "smooth"});
-    sendHttpRequest(newUrl);
-}
-*/
 
 function submitSort() {
     //let currentUrl = window.location.href.split("?")[1];

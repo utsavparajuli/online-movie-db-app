@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Declaring a WebServlet called SingleMovieServlet, which maps to url "/api/single-movie"
-@WebServlet(name = "SingleMovieServlet", urlPatterns = "/api/single-movie")
+@WebServlet(name = "SingleMovieServlet", urlPatterns = "/app/api/single-movie")
 public class SingleMovieServlet extends HttpServlet {
     private static final long serialVersionUID = 2L;
 

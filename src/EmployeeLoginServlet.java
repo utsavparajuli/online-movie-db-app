@@ -18,8 +18,8 @@ import java.sql.ResultSet;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
-@WebServlet(name = "LoginServlet", urlPatterns = "/app/api/login")
-public class LoginServlet extends HttpServlet {
+@WebServlet(name = "EmployeeLoginServlet", urlPatterns = "/_dashboard/api/login")
+public class EmployeeLoginServlet extends HttpServlet {
 
     // Create a dataSource which registered in web.xml
     private DataSource dataSource;
@@ -51,7 +51,7 @@ public class LoginServlet extends HttpServlet {
         try (Connection conn = dataSource.getConnection()) {
             RecaptchaVerifyUtils.verify(gRecaptchaResponse);
 
-            String query = "SELECT c.id, c.password FROM customers as c WHERE c.email = ?;";
+            String query = "SELECT e.password FROM employees e WHERE e.email = ?;";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -65,8 +65,8 @@ public class LoginServlet extends HttpServlet {
                 String encryptedPassword = rs.getString("password");
                 success = new StrongPasswordEncryptor().checkPassword(password, encryptedPassword);
                 if (success) {
-                    request.getSession().setAttribute("user", new User(username));
-                    request.getSession().setAttribute("customerId", rs.getString("id"));
+                    request.getSession().setAttribute("employee", new User(username));
+                    //request.getSession().setAttribute("customerId", rs.getString("id"));
                     responseJsonObject.addProperty("status", "success");
                     responseJsonObject.addProperty("message", "success");
                 } else {

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 
-@WebServlet(name = "PaymentServlet", urlPatterns = "/api/payment")
+@WebServlet(name = "PaymentServlet", urlPatterns = "/app/api/payment")
 public class PaymentServlet extends HttpServlet {
 
     // Create a dataSource which registered in web.xml

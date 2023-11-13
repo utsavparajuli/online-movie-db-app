@@ -5,11 +5,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-/**
- * Servlet Filter implementation class LoginFilter
- */
-@WebFilter(filterName = "LoginFilter", urlPatterns = "/app/*")
-public class LoginFilter implements Filter {
+@WebFilter(filterName = "EmployeeLoginFilter", urlPatterns = "/_dashboard/*")
+public class EmployeeLoginFilter implements Filter {
     private final ArrayList<String> allowedURIs = new ArrayList<>();
 
     /**
@@ -20,20 +17,21 @@ public class LoginFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
 
-        request.getServletContext().log("LoginFilter: " + httpRequest.getRequestURI());
-        System.out.println("LoginFilter: " + httpRequest.getRequestURI());
+        request.getServletContext().log("EmployeeLoginFilter: " + httpRequest.getRequestURI());
+        System.out.println("EmployeeLoginFilter: " + httpRequest.getRequestURI());
 
         // Check if this URL is allowed to access without logging in
         if (this.isUrlAllowedWithoutLogin(httpRequest.getRequestURI())) {
+            request.getServletContext().log("ELF 1");
             // Keep default action: pass along the filter chain
-            request.getServletContext().log("LF 2");
             chain.doFilter(request, response);
             return;
         }
 
+        request.getServletContext().log("ELF 2");
         // Redirect to login page if the "user" attribute doesn't exist in session
-        if (httpRequest.getSession().getAttribute("user") == null) {
-            httpResponse.sendRedirect("app/login.html");
+        if (httpRequest.getSession().getAttribute("employee") == null) {
+            httpResponse.sendRedirect("login.html");
         } else {
             chain.doFilter(request, response);
         }
@@ -59,5 +57,4 @@ public class LoginFilter implements Filter {
     public void destroy() {
         // ignored.
     }
-
 }
