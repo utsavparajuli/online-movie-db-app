@@ -22,7 +22,7 @@ import classes.SessionParameters;
 
 
 // Declaring a WebServlet called StarsServlet, which maps to url "/api/movie-list"
-@WebServlet(name = "MovieListServlet", urlPatterns = "/api/movie-list")
+@WebServlet(name = "MovieListServlet", urlPatterns = "/app/api/movie-list")
 public class MovieListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

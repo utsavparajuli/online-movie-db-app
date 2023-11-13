@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.sql.*;
 
-@WebServlet(name = "ConfirmationServlet", urlPatterns = "/api/confirmation")
+@WebServlet(name = "ConfirmationServlet", urlPatterns = "/app/api/confirmation")
 public class ConfirmationServlet extends HttpServlet {
 
     private static final long serialVersionUID = 1L;

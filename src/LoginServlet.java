@@ -18,7 +18,7 @@ import java.sql.ResultSet;
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
 
-@WebServlet(name = "LoginServlet", urlPatterns = "/api/login")
+@WebServlet(name = "LoginServlet", urlPatterns = "/app/api/login")
 public class LoginServlet extends HttpServlet {
 
     // Create a dataSource which registered in web.xml

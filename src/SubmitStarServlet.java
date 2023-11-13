@@ -1,23 +1,19 @@
-import classes.MovieItem;
-import classes.User;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Map;
+
 @WebServlet(name = "SubmitStarServlet", urlPatterns = "/_dashboard/api/star")
 public class SubmitStarServlet extends HttpServlet {
     public static final String starIdQuery = "SELECT MAX(id) AS id FROM stars;";
@@ -89,7 +85,6 @@ public class SubmitStarServlet extends HttpServlet {
                 starJsonObject.addProperty("check", "success");
             } else {
                 request.getServletContext().log("unable to insert star");
-                starJsonObject.addProperty("check", "fail");
             }
             insertStatement.close();
             response.getWriter().write(starJsonObject.toString());
@@ -104,9 +99,5 @@ public class SubmitStarServlet extends HttpServlet {
         } finally {
             out.close();
         }
-
-
-
-
     }
 }

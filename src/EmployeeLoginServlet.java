@@ -65,7 +65,7 @@ public class EmployeeLoginServlet extends HttpServlet {
                 String encryptedPassword = rs.getString("password");
                 success = new StrongPasswordEncryptor().checkPassword(password, encryptedPassword);
                 if (success) {
-                    request.getSession().setAttribute("user", new User(username));
+                    request.getSession().setAttribute("employee", new User(username));
                     //request.getSession().setAttribute("customerId", rs.getString("id"));
                     responseJsonObject.addProperty("status", "success");
                     responseJsonObject.addProperty("message", "success");

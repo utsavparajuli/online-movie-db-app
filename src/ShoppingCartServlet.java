@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
-@WebServlet(name = "CartServlet", urlPatterns = "/api/cart")
+@WebServlet(name = "CartServlet", urlPatterns = "/app/api/cart")
 public class ShoppingCartServlet extends HttpServlet {
 
     // Create a dataSource which registered in web.xml
