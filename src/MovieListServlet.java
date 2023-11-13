@@ -40,6 +40,7 @@ public class MovieListServlet extends HttpServlet {
 
     // Generates a SQL query String
     private String getQueryString(SessionParameters sessionParameters) {
+        //TODO genre query, startswith, search
         String query = "SELECT DISTINCT m.id, m.title AS title, m.year, m.director, r.rating AS rating " +
                 "FROM movies m, ratings r ";
 
