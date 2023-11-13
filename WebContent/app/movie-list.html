@@ -1,0 +1,121 @@
+<!-- This example is following frontend and backend separation.
+
+    This .html performs two steps:
+    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
+    2. Load index.js to populate the data into empty elements.
+    -->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../style.css" type="text/css">
+    <title>Movie List</title>
+    <link rel="icon" href="../img/favicon.ico" />
+</head>
+<body>
+<div class="home-image">
+    <a href="index.html">
+        <img src="../img/homepage.png" alt="Homepage" style="width:30px;height:30px;">
+    </a>
+</div>
+
+<br>
+
+<div class="home-image" style="align-content: end">
+    <a href="cart.html">
+        <img src="../img/carts.png" alt="Cart" style="width:30px;height:30px;">
+    </a>
+</div>
+
+<div id="dvNotify" class="notification">
+    <label id="cart_message"></label>
+    <a href="#" id="btnClose">[x]</a>
+</div>
+
+<h1 class="h1-title padding-header">Results</h1>
+<br>
+
+<div class="container">
+    <form class="form-inline" method="get" action="#">
+        <label for="num_results">Results Per Page: </label>
+        <select id="num_results" class="form-select-sm">
+            <option value="10">10</option>
+            <option selected="selected" value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+        </select>
+        <label for="sort_order">Sort By:</label>
+        <select class="form-select-sm" id="sort_order">
+            <option selected="selected" value="rating DESC title ASC">Rating Desc, Title Asc</option>
+            <option value="rating DESC title DESC">Rating Desc, Title Desc</option>
+            <option value="rating ASC title ASC">Rating Asc, Title Asc</option>
+            <option value="rating ASC title DESC">Rating Asc, Title Desc</option>
+            <option value="title DESC Rating ASC">Title Desc, Rating Asc</option>
+            <option value="title DESC Rating DESC">Title Desc, Rating Desc</option>
+            <option value="title ASC Rating ASC">Title Asc, Rating Asc</option>
+            <option value="title ASC Rating DESC">Title Asc, Rating Desc</option>
+        </select>
+        <input type="button"  class="btn btn-default"  value="Sort" onclick="submitSort()">
+    </form>
+</div>
+
+<table id=movie_table class="table table-striped align-content-center">
+    <!-- Create a table header -->
+    <thead>
+    <tr>
+        <!-- Titles of each column-->
+        <th>Title</th>
+        <th>Year</th>
+        <th>Director</th>
+        <th>Genres</th>
+        <th>Stars</th>
+        <th>Rating</th>
+        <th>Purchase</th>
+    </tr>
+    </thead>
+    <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
+    <!-- Again, id "star_table_body" is useful for jQuery to find this html element -->
+    <tbody id=movie_list_table_body></tbody>
+</table>
+<div class="container">
+    <ul class="pagination justify-content-center">
+        <li class="page-item disabled" id="previous_page">
+            <a class="page-link" onclick="changePage(-1)" >Prev</a>
+        </li>
+        <li class="page-item disabled">
+            <a class="page-link" tabindex="-1" id="current_page">1</a>
+        </li>
+        <li class="page-item" id="next_page">
+            <a class="page-link" onclick="changePage(1)" >Next</a>
+        </li>
+    </ul>
+</div>
+
+
+<!-- Load jQuery and Bootstrap JS -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<!-- Load our own JS file -->
+<!-- The path is relative to index.html, since these two files are in the same directory -->
+<!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
+     otherwise the url is relative to the root path-->
+<script type='text/javascript' src='cart.js'></script>
+<script src="movie-list.js"></script>
+
+
+</body>
+
+
+</html>

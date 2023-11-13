@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Page</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="../style.css" type="text/css">
+    <link rel="icon" href="../img/favicon.ico" />
+</head>
+<body>
+
+<div class="home-image">
+    <a href="index.html">
+        <img src="../img/homepage.png" alt="Homepage" style="width:30px;height:30px;">
+    </a>
+</div>
+
+<div class="home-image" style="align-content: end">
+    <a href="cart.html">
+        <img src="../img/carts.png" alt="Cart" style="width:30px;height:30px;">
+    </a>
+</div>
+<br>
+
+<h1 align="center">Continue with Payment</h1>
+
+<label><b>Total: $</b> </label> <label id="total_cost"></label>
+
+<br>
+<br>
+
+<form style="align-content: center" id="payment_form" method="post" action="#">
+    <label><b>First Name</b></label>
+    <label>
+        <input name="first_name" placeholder="First Name" type="text" required>
+    </label>
+    <br>
+    <br>
+    <label><b>Last Name</b></label>
+    <label>
+        <input name="last_name" placeholder="Last Name" type="text" required>
+    </label>
+    <br>
+    <br>
+    <label><b>Credit Card Number</b></label>
+    <label>
+        <input name="cc_number" placeholder="Credit Card Number" type="number" required>
+    </label>
+    <br>
+    <br>
+    <label><b>Expiration Date</b></label>
+    <label>
+        <input name="cc_expiration" placeholder="Expiration Date" type="date" required>
+    </label>
+    <br>
+    <br>
+    <input type="submit"  class="btn btn-default" value="Place Order">
+</form>
+
+<br>
+<div id="payment_error_message"></div>
+
+<!-- include your own JS file -->
+<script src='https://code.jquery.com/jquery-3.1.0.min.js'></script>
+<script type='text/javascript' src='payment.js'></script>
+</body>
+</html>
