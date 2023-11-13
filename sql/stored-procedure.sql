@@ -67,3 +67,9 @@ BEGIN
 END
 //
 DELIMITER ;
+
+CREATE PROCEDURE get_table_metadata ()
+    SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE table_schema = 'moviedb'
+    ORDER BY table_name ASC;
