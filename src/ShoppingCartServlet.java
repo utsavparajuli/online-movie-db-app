@@ -23,7 +23,6 @@ import java.util.stream.Collectors;
 
 @WebServlet(name = "CartServlet", urlPatterns = "/app/api/cart")
 public class ShoppingCartServlet extends HttpServlet {
-
     // Create a dataSource which registered in web.xml
     private DataSource dataSource;
 
@@ -64,9 +63,10 @@ public class ShoppingCartServlet extends HttpServlet {
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
             for (Map.Entry<String, Long> entry : movieCounts.entrySet()) {
-                String query = String.format("SELECT m.id, m.title, m.price FROM movies m WHERE m.id = '%s';", entry.getKey());
+                String query = "SELECT m.id, m.title, m.price FROM movies m WHERE m.id = ?;";
 
                 PreparedStatement statement = conn.prepareStatement(query);
+                statement.setString(1, entry.getKey());
                 ResultSet resultSet = statement.executeQuery();
 
                 // Iterate through each row of resultSet

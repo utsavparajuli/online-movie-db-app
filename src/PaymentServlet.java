@@ -82,12 +82,17 @@ public class PaymentServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try (Connection conn = dataSource.getConnection()) {
-            String query = String.format("SELECT * FROM creditcards as cc " +
-                                        "WHERE cc.firstName = '%s' AND " + "cc.lastName = '%s' AND cc.id = '%s' " +
-                                        "AND cc.expiration = '%s';", first_name, last_name, cc_number, exp_date);
+            String query = "SELECT * FROM creditcards as cc " +
+                    "WHERE cc.firstName = ? AND " +
+                    "cc.lastName = ? AND cc.id = ? " +
+                    "AND cc.expiration = ?;";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
+            statement.setString(1, first_name);
+            statement.setString(2, last_name);
+            statement.setString(3, cc_number);
+            statement.setString(4, exp_date);
             // Perform the query
             ResultSet rs = statement.executeQuery();
 
@@ -107,10 +112,12 @@ public class PaymentServlet extends HttpServlet {
                 for (String s :
                         previousItems) {
                     movieId = s;
-                    String saleEntryQuery = String.format("INSERT INTO sales VALUES (null, %s, '%s', '%s');",
-                                            customerId, movieId, date);
+                    String saleEntryQuery = "INSERT INTO sales VALUES (null, ?, ?, ?);";
 
                     PreparedStatement insertStatement = conn.prepareStatement(saleEntryQuery);
+                    insertStatement.setString(1, customerId);
+                    insertStatement.setString(1, movieId);
+                    insertStatement.setString(2, date);
                     var updateResponse = insertStatement.executeUpdate();
 
                     if(updateResponse == 1) {

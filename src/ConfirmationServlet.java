@@ -48,12 +48,13 @@ public class ConfirmationServlet extends HttpServlet {
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
 
-            String query = String.format("SELECT group_concat(s.id) AS SaleID, m.title AS MovieName, COUNT(s.movieID) " +
+            String query = "SELECT group_concat(s.id) AS SaleID, m.title AS MovieName, COUNT(s.movieID) " +
                                 "AS QuantityPurchased FROM moviedb.sales s JOIN moviedb.movies m ON s.movieID = m.id " +
-                                "WHERE s.customerID = '%s' AND s.saleDate = '%s' GROUP BY m.title;",
-                                session.getAttribute("customerId"),  date);
+                                "WHERE s.customerID = ? AND s.saleDate = ? GROUP BY m.title;";
 
             PreparedStatement statement = conn.prepareStatement(query);
+            statement.setString(1, session.getAttribute("customerId").toString());
+            statement.setString(2, date);
             ResultSet resultSet = statement.executeQuery();
 
             // Iterate through each row of resultSet
