@@ -282,7 +282,6 @@ sessionStorage.removeItem("prevPage");
 
 if (sessionStorage.getItem("backCheck") === "yes") {
     console.log("backPage was set");
-    //if (sessionStorage.getItem("backCheck") === "yes") {
     let url = sessionStorage.getItem("baseUrl") +
         "&num_results=" + sessionStorage.getItem("num_results") +
         "&offset=" + sessionStorage.getItem("offset") +
@@ -291,11 +290,8 @@ if (sessionStorage.getItem("backCheck") === "yes") {
         "&second_sort=" + sessionStorage.getItem("second_sort") +
         "&second_dir=" + sessionStorage.getItem("second_dir");
     console.log("URL AFTER COMING BACK FROM A SINGLE PAGE: " + url);
+    sessionStorage.removeItem("backCheck");
     sendHttpRequest(url);
-    //} else {
-    //    console.log("no saved page, return to index")
-    //    window.location.replace("index.html");
-    //}
 } else {
     console.log("Going to createUrl()");
     sendHttpRequest(createUrl());
