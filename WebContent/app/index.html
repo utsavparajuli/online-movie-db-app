@@ -57,27 +57,25 @@
     <span></span>
     <hr>
 
+
     <h2 class="text-center">Advanced Search</h2>
+    <span></span>
 
     <div class="align-items-center justify-content-center">
 
-        <form method="get" action="#">
+        <form class="form-inline" method="get" action="#">
 
             <div class="form-group">
-                <label><b>Title</b></label>
-                <input class="form-control" id="movie_title" placeholder="Movie Title" type="text">
+                <label for="movie_title"><b>Title</b></label><input class="form-control" id="movie_title" placeholder="Movie Title" type="text">
             </div>
             <div class="form-group">
-                <label><b>Year</b></label>
-                    <input class="form-control" id="movie_year" placeholder="Release Year" type="number" maxlength="4" minlength="4">
+                <label for="movie_year"><b>Year</b></label><input class="form-control" id="movie_year" placeholder="Release Year" type="number" maxlength="4" minlength="4">
             </div>
             <div class="form-group">
-                <label><b>Director</b></label>
-                    <input class="form-control" id="movie_director" placeholder="Director Name" type="text" >
+                <label for="movie_director"><b>Director</b></label><input class="form-control" id="movie_director" placeholder="Director Name" type="text" >
             </div>
             <div class="form-group">
-                <label><b>Star</b></label>
-                    <input class="form-control" id="movie_star" placeholder="Star Name" type="text" >
+                <label for="movie_star"><b>Star</b></label><input class="form-control" id="movie_star" placeholder="Star Name" type="text" >
             </div>
             <input type="button" class="btn btn-default" value="Search" onclick="submitSearch()">
         </form>
@@ -90,10 +88,27 @@
 
     <!--                                SEARCH COMPONENT   END                 -->
 
+    <h2 class="text-center">Title Search</h2>
+    <div class="align-items-center justify-content-center">
+        <form class="form-inline" method="get" action="#">
+            <div class="form-group">
+                <label for="fulltext-movie-title"><b>Title</b></label><input class="form-control" id="fulltext-movie-title" placeholder="Movie Title" type="text">
+                <input type="button" class="btn btn-default" value="Search" onclick="submitTitleSearch()">
+            </div>
+
+        </form>
+    </div>
+
+
+
+    <br>
+    <span></span>
+    <hr>
+
     <!--
                                   BROWSE COMPONENT   BEGIN - ALPHABETICAL                 -->
     <div>
-        <h2 class="text-center">BROWSE - ALPHABETICAL</h2>
+        <h2 class="text-center">Browse - Alphabetical</h2>
 
         <div class="grid-container" id="alphabetical_list"></div>
     </div>
@@ -106,7 +121,7 @@
 
 
 
-    <h2 class="text-center">BROWSE - GENRE</h2>
+    <h2 class="text-center">Browse - Genre</h2>
     <!-- ID "star_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
     <table id=genre_table class="table table-striped align-content-center align-items-center">
         <!-- Create a table header -->

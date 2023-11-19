@@ -98,6 +98,11 @@ function submitSearch() {
     window.location.href = url;
 }
 
+function submitTitleSearch() {
+    let movieTitle = document.getElementById("movie_title").value.toString();
+
+}
+
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
