@@ -13,7 +13,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
+import edu.uci.ics.fabflixmobile.ui.mainpage.MainPageActivity;
 import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,13 +65,24 @@ public class LoginActivity extends AppCompatActivity {
                 response -> {
                     // TODO: should parse the json response to redirect to appropriate functions
                     //  upon different response value.
-                    Log.d("login.success", response);
-                    //Complete and destroy login activity once successful
-                    finish();
-                    // initialize the activity(page)/destination
-                    Intent MovieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
-                    // activate the list page.
-                    startActivity(MovieListPage);
+                    Log.d("login.response", response);
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        if(jsonObject.getString("status").equals("success")) {
+                            //Complete and destroy login activity once successful
+                            finish();
+                            // initialize the activity(page)/destination
+                            Intent MainPage = new Intent(LoginActivity.this, MainPageActivity.class);
+                            // activate the list page.
+                            startActivity(MainPage);
+                        }
+                        else {
+                            message.setText(jsonObject.getString("message"));
+                        }
+                    }catch (JSONException err){
+                        Log.d("JSONParse Error", err.toString());
+                    }
                 },
                 error -> {
                     // error
@@ -79,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                 final Map<String, String> params = new HashMap<>();
                 params.put("username", username.getText().toString());
                 params.put("password", password.getText().toString());
+                params.put("g-recaptcha-response", "android");
                 return params;
             }
         };

@@ -14,6 +14,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Objects;
 
 import org.jasypt.util.password.PasswordEncryptor;
 import org.jasypt.util.password.StrongPasswordEncryptor;
@@ -49,7 +50,9 @@ public class LoginServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
 
         try (Connection conn = dataSource.getConnection()) {
-            RecaptchaVerifyUtils.verify(gRecaptchaResponse);
+            if(!Objects.equals(gRecaptchaResponse, "android")) {
+                RecaptchaVerifyUtils.verify(gRecaptchaResponse);
+            }
 
             String query = "SELECT c.id, c.password FROM customers as c WHERE c.email = ?;";
 
