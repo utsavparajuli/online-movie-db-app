@@ -257,3 +257,31 @@ body .column {
     align-items: center;
 }
 
+.form-inline {
+    text-align: center;
+    justify-content: center;
+    font-family: Roboto, sans-serif;
+}
+
+.form-inline label {
+    font-family: Roboto, sans-serif;
+    font-weight: 300;
+    margin: 5px 5px 5px;
+    font-size: 1.3em;
+}
+
+.form-inline input {
+    font-family: Roboto, sans-serif;
+    font-weight: 300;
+    margin-right: 15px;
+}
+
+.form-inline .btn {
+    margin-left: 10px;
+}
+
+.h2 {
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+}
+
