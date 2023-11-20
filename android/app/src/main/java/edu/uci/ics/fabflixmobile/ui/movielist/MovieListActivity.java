@@ -36,35 +36,72 @@ import java.util.Map;
 
 public class MovieListActivity extends AppCompatActivity {
 
+    public interface MovieCallback {
+        void onMoviesReceived(ArrayList<Movie> movies);
+        void onError(String errorMessage);
+    }
+
     private final String host = "10.0.2.2";
     private final String port = "8443";
     private final String domain = "cs122b_project3_war";
     private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        ActivityMovielistBinding binding = ActivityMovielistBinding.inflate(getLayoutInflater());
+//
+////        setContentView(R.layout.activity_movielist);
+//        setContentView(binding.getRoot());
+//        // TODO: this should be retrieved from the backend server
+//        final Button backButton = binding.backButton;
+//        backButton.setOnClickListener(view -> back());
+//
+//        final ArrayList<Movie> movies = getMovies();
+////        movies.add(new Movie("The Terminal", (short) 2004));
+////        movies.add(new Movie("The Final Season", (short) 2007));
+////        movies.add(new Movie(getIntent().getStringExtra("movie_title"), (short) 2023));
+//        MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
+//        ListView listView = findViewById(R.id.list);
+//        listView.setAdapter(adapter);
+//        listView.setOnItemClickListener((parent, view, position, id) -> {
+//            Movie movie = movies.get(position);
+//            @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
+//            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+//        });
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ActivityMovielistBinding binding = ActivityMovielistBinding.inflate(getLayoutInflater());
-
-//        setContentView(R.layout.activity_movielist);
         setContentView(binding.getRoot());
-        // TODO: this should be retrieved from the backend server
+
         final Button backButton = binding.backButton;
         backButton.setOnClickListener(view -> back());
 
-        final ArrayList<Movie> movies = getMovies();
-//        movies.add(new Movie("The Terminal", (short) 2004));
-//        movies.add(new Movie("The Final Season", (short) 2007));
-//        movies.add(new Movie(getIntent().getStringExtra("movie_title"), (short) 2023));
-        MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
-        ListView listView = findViewById(R.id.list);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-            Movie movie = movies.get(position);
-            @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
-            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        String movie_title = getIntent().getStringExtra("movie_title");
+        getMovies(movie_title, new MovieCallback() {
+            @Override
+            public void onMoviesReceived(ArrayList<Movie> movies) {
+                MovieListViewAdapter adapter = new MovieListViewAdapter(MovieListActivity.this, movies);
+                ListView listView = findViewById(R.id.list);
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener((parent, view, position, id) -> {
+                    Movie movie = movies.get(position);
+                    @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                });
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., show a toast
+                Toast.makeText(getApplicationContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
         });
     }
+
 
     @SuppressLint("SetTextI18n")
     public void back() {
@@ -75,43 +112,72 @@ public class MovieListActivity extends AppCompatActivity {
         startActivity(SearchPage);
     }
 
-    @SuppressLint("SetTextI18n")
-    public ArrayList<Movie> getMovies() {
-        String movie_title = getIntent().getStringExtra("movie_title");
-
-        ArrayList<Movie> movies;
+    public void getMovies(String movieTitle, MovieCallback callback) {
         // use the same network queue across our application
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
-        System.out.println("HERE");
+
         // request type is POST
         final StringRequest searchRequest = new StringRequest(
                 Request.Method.POST,
                 baseURL + "/app/api/movie-list",
                 response -> {
-                    // TODO: should parse the json response to redirect to appropriate functions
-                    //  upon different response value.
                     Log.d("search.response", response);
 
-                     movies = MovieParser.parseJson(response);
+                    ArrayList<Movie> movies = MovieParser.parseJson(response);
+                    callback.onMoviesReceived(movies);
                 },
                 error -> {
-                    // error
                     Log.d("search.error", error.toString());
+                    callback.onError(error.toString());
                 }) {
             @Override
             protected Map<String, String> getParams() {
                 // POST request form data
                 final Map<String, String> params = new HashMap<>();
-                params.put("movie_title", movie_title);
+                params.put("movie_title", movieTitle);
                 return params;
             }
         };
+
         // important: queue.add is where the login request is actually sent
         queue.add(searchRequest);
-
-
-        return movies;
     }
+
+//
+//    @SuppressLint("SetTextI18n")
+//    public ArrayList<Movie> getMovies(String movieTitle, MovieCallback callback) {
+//        String movie_title = getIntent().getStringExtra("movie_title");
+//        ArrayList<Movie> movies;
+//        // use the same network queue across our application
+//        final RequestQueue queue = NetworkManager.sharedManager(this).queue;
+//        System.out.println("HERE");
+//        // request type is POST
+//        final StringRequest searchRequest = new StringRequest(
+//                Request.Method.POST,
+//                baseURL + "/app/api/movie-list",
+//                response -> {
+//                    // TODO: should parse the json response to redirect to appropriate functions
+//                    //  upon different response value.
+//                    Log.d("search.response", response);
+//
+//                     movies = MovieParser.parseJson(response);
+//                },
+//                error -> {
+//                    // error
+//                    Log.d("search.error", error.toString());
+//                }) {
+//            @Override
+//            protected Map<String, String> getParams() {
+//                // POST request form data
+//                final Map<String, String> params = new HashMap<>();
+//                params.put("movie_title", movie_title);
+//                return params;
+//            }
+//        };
+//        // important: queue.add is where the login request is actually sent
+//        queue.add(searchRequest);
+//        return movies;
+//    }
 
 
 
@@ -119,7 +185,7 @@ public class MovieListActivity extends AppCompatActivity {
 
     public static class MovieParser {
         public static ArrayList<Movie> parseJson(String jsonResponse) {
-            List<Movie> movieList = new ArrayList<>();
+            ArrayList<Movie> movieList = new ArrayList<>();
 
             try {
                 JSONArray jsonArray = new JSONArray(jsonResponse);
