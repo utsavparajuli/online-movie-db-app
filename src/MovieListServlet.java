@@ -154,6 +154,8 @@ public class MovieListServlet extends HttpServlet {
             String query = getQueryString(sessionParameters);
             request.getServletContext().log("\n\nSQL query: " + query);
 
+            System.out.println("Query = " + query);
+
             // Perform the query
             PreparedStatement statement = conn.prepareStatement(query);
             ResultSet resultSet  = statement.executeQuery();
