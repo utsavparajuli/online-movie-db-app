@@ -2,6 +2,7 @@ package edu.uci.ics.fabflixmobile.ui.movielist;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.util.JsonReader;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
@@ -16,7 +17,9 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.R;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
+import edu.uci.ics.fabflixmobile.data.model.Genre;
 import edu.uci.ics.fabflixmobile.data.model.Movie;
+import edu.uci.ics.fabflixmobile.data.model.Star;
 import edu.uci.ics.fabflixmobile.databinding.ActivityMainpageBinding;
 import edu.uci.ics.fabflixmobile.databinding.ActivityMovielistBinding;
 import edu.uci.ics.fabflixmobile.ui.login.LoginActivity;
@@ -25,8 +28,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MovieListActivity extends AppCompatActivity {
@@ -73,23 +78,21 @@ public class MovieListActivity extends AppCompatActivity {
     @SuppressLint("SetTextI18n")
     public ArrayList<Movie> getMovies() {
         String movie_title = getIntent().getStringExtra("movie_title");
+
+        ArrayList<Movie> movies;
         // use the same network queue across our application
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         System.out.println("HERE");
         // request type is POST
         final StringRequest searchRequest = new StringRequest(
-                Request.Method.GET,
+                Request.Method.POST,
                 baseURL + "/app/api/movie-list",
                 response -> {
                     // TODO: should parse the json response to redirect to appropriate functions
                     //  upon different response value.
                     Log.d("search.response", response);
 
-                    try {
-                        JSONArray jsonObject = new JSONArray(response);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
+                     movies = MovieParser.parseJson(response);
                 },
                 error -> {
                     // error
@@ -106,10 +109,73 @@ public class MovieListActivity extends AppCompatActivity {
         // important: queue.add is where the login request is actually sent
         queue.add(searchRequest);
 
-        final ArrayList<Movie> movies = new ArrayList<>();
-        movies.add(new Movie("The Terminal", (short) 2004));
-        movies.add(new Movie("The Final Season", (short) 2007));
-        movies.add(new Movie(getIntent().getStringExtra("movie_title"), (short) 2023));
+
         return movies;
+    }
+
+
+
+
+
+    public static class MovieParser {
+        public static ArrayList<Movie> parseJson(String jsonResponse) {
+            List<Movie> movieList = new ArrayList<>();
+
+            try {
+                JSONArray jsonArray = new JSONArray(jsonResponse);
+
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonMovie = jsonArray.getJSONObject(i);
+
+                    String movieId = jsonMovie.getString("movie_id");
+                    String movieTitle = jsonMovie.getString("movie_title");
+                    String year = jsonMovie.getString("year");
+                    String director = jsonMovie.getString("director");
+                    String rating = jsonMovie.getString("rating");
+
+                    // Parse stars array
+                    JSONObject starsArray = jsonMovie.getJSONObject("stars");
+                    List<Star> stars = parseStars(starsArray);
+
+                    // Parse genres array
+                    JSONObject genresArray = jsonMovie.getJSONObject("genres");
+                    List<Genre> genres = parseGenres(genresArray);
+
+                    // Create Movie object and add to the list
+                    Movie movie = new Movie(movieId, movieTitle, Short.parseShort(year), director, rating, genres, stars);
+                    movieList.add(movie);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return movieList;
+        }
+
+        private static List<Star> parseStars(JSONObject starsObject) throws JSONException {
+            List<Star> stars = new ArrayList<>();
+
+            for (int j = 0; j < starsObject.length(); j++) {
+                JSONObject jsonStar = starsObject.getJSONObject(String.valueOf(j));
+                String starId = jsonStar.getString("id");
+                String starName = jsonStar.getString("name");
+                stars.add(new Star(starId, starName));
+            }
+
+            return stars;
+        }
+
+        private static List<Genre> parseGenres(JSONObject genresObject) throws JSONException {
+            List<Genre> genres = new ArrayList<>();
+
+            for (int k = 0; k < genresObject.length(); k++) {
+                JSONObject jsonGenre = genresObject.getJSONObject(String.valueOf(k));
+                String genreId = jsonGenre.getString("id");
+                String genreName = jsonGenre.getString("name");
+                genres.add(new Genre(genreId, genreName));
+            }
+
+            return genres;
+        }
     }
 }

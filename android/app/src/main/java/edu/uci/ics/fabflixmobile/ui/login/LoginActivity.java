@@ -95,6 +95,7 @@ public class LoginActivity extends AppCompatActivity {
                 params.put("username", username.getText().toString());
                 params.put("password", password.getText().toString());
                 params.put("g-recaptcha-response", "android");
+                System.out.println(username.getText().toString());
                 return params;
             }
         };

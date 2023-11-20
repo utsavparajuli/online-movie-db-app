@@ -34,24 +34,24 @@ public class MovieListServlet extends HttpServlet {
         }
     }
 
-   private String getGenreQueryPart(SessionParameters sessionParameters) {
-       return ", genres_in_movies gim " +
-               String.format("WHERE m.id = gim.movieId AND m.id = r.movieId AND gim.genreID = %s ",
-                       sessionParameters.movieGenreId);
-   }
+    private String getGenreQueryPart(SessionParameters sessionParameters) {
+        return ", genres_in_movies gim " +
+                String.format("WHERE m.id = gim.movieId AND m.id = r.movieId AND gim.genreID = %s ",
+                        sessionParameters.movieGenreId);
+    }
 
-   private String getTitleStartsWithQueryPart(SessionParameters sessionParameters) {
+    private String getTitleStartsWithQueryPart(SessionParameters sessionParameters) {
         String query = " WHERE m.id = r.movieId AND title ";
-       if (sessionParameters.movieFirstChar.equals("none")) {
-           query += "NOT REGEXP '^[0-9a-zA-Z]' ";
-       } else {
-           query += "LIKE '" + sessionParameters.movieFirstChar + "%' ";
-       }
-       query += "ORDER BY m.title ASC ";
-       return query;
-   }
+        if (sessionParameters.movieFirstChar.equals("none")) {
+            query += "NOT REGEXP '^[0-9a-zA-Z]' ";
+        } else {
+            query += "LIKE '" + sessionParameters.movieFirstChar + "%' ";
+        }
+        query += "ORDER BY m.title ASC ";
+        return query;
+    }
 
-   private String getSearchQueryPart(SessionParameters sessionParameters) {
+    private String getSearchQueryPart(SessionParameters sessionParameters) {
         boolean isFirstSearchParameter = true;
         StringBuilder query = new StringBuilder();
         if (sessionParameters.movieStar != null) {
@@ -85,38 +85,38 @@ public class MovieListServlet extends HttpServlet {
         return query.toString();
     }
 
-   private String getOrderQueryPart(SessionParameters sessionParameters) {
-       String query = "";
-       if (sessionParameters.sortOrderFirst == null) {
-           query += "ORDER BY rating DESC ";
-       } else {
-           query += String.format("ORDER BY %s %s, %s %s ", sessionParameters.sortOrderFirst,
-                   sessionParameters.sortDirectionFirst, sessionParameters.sortOrderSecond,
-                   sessionParameters.sortDirectionSecond);
-       }
-       return query;
-   }
+    private String getOrderQueryPart(SessionParameters sessionParameters) {
+        String query = "";
+        if (sessionParameters.sortOrderFirst == null) {
+            query += "ORDER BY rating DESC ";
+        } else {
+            query += String.format("ORDER BY %s %s, %s %s ", sessionParameters.sortOrderFirst,
+                    sessionParameters.sortDirectionFirst, sessionParameters.sortOrderSecond,
+                    sessionParameters.sortDirectionSecond);
+        }
+        return query;
+    }
 
-   private String getLimitQueryPart(SessionParameters sessionParameters) {
-       String query = "";
-       if (sessionParameters.numResultsPerPage == 25) {
-           query += "LIMIT 25 ";
-           if (sessionParameters.offset == 0) {
-               query += ";";
-           } else {
-               query += "OFFSET " + Integer.toString(25 * sessionParameters.offset + 1) + ";";
-           }
-       } else {
-           query += "LIMIT " + Integer.toString(sessionParameters.numResultsPerPage) + " ";
-           if (sessionParameters.offset == 0) {
-               query += ";";
-           } else {
-               query += "OFFSET " + Integer.toString(
-                       sessionParameters.numResultsPerPage * sessionParameters.offset + 1) + ";";
-           }
-       }
-       return query;
-   }
+    private String getLimitQueryPart(SessionParameters sessionParameters) {
+        String query = "";
+        if (sessionParameters.numResultsPerPage == 25) {
+            query += "LIMIT 25 ";
+            if (sessionParameters.offset == 0) {
+                query += ";";
+            } else {
+                query += "OFFSET " + Integer.toString(25 * sessionParameters.offset + 1) + ";";
+            }
+        } else {
+            query += "LIMIT " + Integer.toString(sessionParameters.numResultsPerPage) + " ";
+            if (sessionParameters.offset == 0) {
+                query += ";";
+            } else {
+                query += "OFFSET " + Integer.toString(
+                        sessionParameters.numResultsPerPage * sessionParameters.offset + 1) + ";";
+            }
+        }
+        return query;
+    }
 
     private String getQueryString(SessionParameters sessionParameters) {
         StringBuilder query = new StringBuilder("SELECT DISTINCT m.id, m.title AS title, m.year, m.director, r.rating AS rating " +
@@ -153,8 +153,6 @@ public class MovieListServlet extends HttpServlet {
 
             String query = getQueryString(sessionParameters);
             request.getServletContext().log("\n\nSQL query: " + query);
-
-            System.out.println("Query = " + query);
 
             // Perform the query
             PreparedStatement statement = conn.prepareStatement(query);
