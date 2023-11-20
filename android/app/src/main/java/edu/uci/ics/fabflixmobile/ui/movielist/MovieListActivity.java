@@ -6,6 +6,7 @@ import android.util.JsonReader;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +28,7 @@ import edu.uci.ics.fabflixmobile.ui.mainpage.MainPageActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -41,35 +43,18 @@ public class MovieListActivity extends AppCompatActivity {
         void onError(String errorMessage);
     }
 
+    private int currentPage;
+    private static final int PAGE_SIZE = 10;
+
     private final String host = "10.0.2.2";
     private final String port = "8443";
     private final String domain = "cs122b_project3_war";
     private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        ActivityMovielistBinding binding = ActivityMovielistBinding.inflate(getLayoutInflater());
-//
-////        setContentView(R.layout.activity_movielist);
-//        setContentView(binding.getRoot());
-//        // TODO: this should be retrieved from the backend server
-//        final Button backButton = binding.backButton;
-//        backButton.setOnClickListener(view -> back());
-//
-//        final ArrayList<Movie> movies = getMovies();
-////        movies.add(new Movie("The Terminal", (short) 2004));
-////        movies.add(new Movie("The Final Season", (short) 2007));
-////        movies.add(new Movie(getIntent().getStringExtra("movie_title"), (short) 2023));
-//        MovieListViewAdapter adapter = new MovieListViewAdapter(this, movies);
-//        ListView listView = findViewById(R.id.list);
-//        listView.setAdapter(adapter);
-//        listView.setOnItemClickListener((parent, view, position, id) -> {
-//            Movie movie = movies.get(position);
-//            @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
-//            Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-//        });
-//    }
+    private TextView pageNumber;
+
+    private Button prevButton;
+    private Button nextButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,29 +62,51 @@ public class MovieListActivity extends AppCompatActivity {
         ActivityMovielistBinding binding = ActivityMovielistBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        currentPage = 1;
+        pageNumber = binding.pageNumber;
+
         final Button backButton = binding.backButton;
+        prevButton = binding.prevButton;
+        nextButton = binding.nextButton;
+
         backButton.setOnClickListener(view -> back());
 
-        String movie_title = getIntent().getStringExtra("movie_title");
-        getMovies(movie_title, new MovieCallback() {
-            @Override
-            public void onMoviesReceived(ArrayList<Movie> movies) {
-                MovieListViewAdapter adapter = new MovieListViewAdapter(MovieListActivity.this, movies);
-                ListView listView = findViewById(R.id.list);
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener((parent, view, position, id) -> {
-                    Movie movie = movies.get(position);
-                    @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
-                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-                });
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                // Handle the error, e.g., show a toast
-                Toast.makeText(getApplicationContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
-            }
+        prevButton.setOnClickListener(v -> {
+            currentPage--;
+            fetchMovies(currentPage);
         });
+
+        nextButton.setOnClickListener(v -> {
+            currentPage++;
+            fetchMovies(currentPage);
+        });
+
+
+
+        String movie_title = getIntent().getStringExtra("movie_title");
+
+
+        fetchMovies(currentPage);
+
+//        getMovies(movie_title, currentPage, new MovieCallback() {
+//            @Override
+//            public void onMoviesReceived(ArrayList<Movie> movies) {
+//                MovieListViewAdapter adapter = new MovieListViewAdapter(MovieListActivity.this, movies);
+//                ListView listView = findViewById(R.id.list);
+//                listView.setAdapter(adapter);
+//                listView.setOnItemClickListener((parent, view, position, id) -> {
+//                    Movie movie = movies.get(position);
+//                    @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
+//                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+//                });
+//            }
+//
+//            @Override
+//            public void onError(String errorMessage) {
+//                // Handle the error, e.g., show a toast
+//                Toast.makeText(getApplicationContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+//            }
+//        });
     }
 
 
@@ -112,7 +119,7 @@ public class MovieListActivity extends AppCompatActivity {
         startActivity(SearchPage);
     }
 
-    public void getMovies(String movieTitle, MovieCallback callback) {
+    public void getMovies(String movieTitle, int currentPage, MovieCallback callback) {
         // use the same network queue across our application
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
 
@@ -135,6 +142,9 @@ public class MovieListActivity extends AppCompatActivity {
                 // POST request form data
                 final Map<String, String> params = new HashMap<>();
                 params.put("movie_title", movieTitle);
+                params.put("offset", String.valueOf(currentPage - 1));
+                params.put("num_results", String.valueOf(PAGE_SIZE));
+
                 return params;
             }
         };
@@ -143,42 +153,38 @@ public class MovieListActivity extends AppCompatActivity {
         queue.add(searchRequest);
     }
 
-//
-//    @SuppressLint("SetTextI18n")
-//    public ArrayList<Movie> getMovies(String movieTitle, MovieCallback callback) {
-//        String movie_title = getIntent().getStringExtra("movie_title");
-//        ArrayList<Movie> movies;
-//        // use the same network queue across our application
-//        final RequestQueue queue = NetworkManager.sharedManager(this).queue;
-//        System.out.println("HERE");
-//        // request type is POST
-//        final StringRequest searchRequest = new StringRequest(
-//                Request.Method.POST,
-//                baseURL + "/app/api/movie-list",
-//                response -> {
-//                    // TODO: should parse the json response to redirect to appropriate functions
-//                    //  upon different response value.
-//                    Log.d("search.response", response);
-//
-//                     movies = MovieParser.parseJson(response);
-//                },
-//                error -> {
-//                    // error
-//                    Log.d("search.error", error.toString());
-//                }) {
-//            @Override
-//            protected Map<String, String> getParams() {
-//                // POST request form data
-//                final Map<String, String> params = new HashMap<>();
-//                params.put("movie_title", movie_title);
-//                return params;
-//            }
-//        };
-//        // important: queue.add is where the login request is actually sent
-//        queue.add(searchRequest);
-//        return movies;
-//    }
+    private void fetchMovies(int page) {
+        // Show loading state
 
+        String movie_title = getIntent().getStringExtra("movie_title");
+
+        // Make API request with updated page
+        getMovies(movie_title, page, new MovieCallback() {
+            @Override
+            public void onMoviesReceived(ArrayList<Movie> movies) {
+//                hideLoading();
+                MovieListViewAdapter adapter = new MovieListViewAdapter(MovieListActivity.this, movies);
+                ListView listView = findViewById(R.id.list);
+                listView.setAdapter(adapter);
+                listView.setOnItemClickListener((parent, view, position, id) -> {
+                    Movie movie = movies.get(position);
+                    @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
+                    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                });
+                pageNumber.setText(String.valueOf(currentPage));
+
+                prevButton.setEnabled(currentPage > 1);
+                nextButton.setEnabled(movies.size() >= 10);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // hideLoading();
+                // Handle the error, e.g., show a toast
+                Toast.makeText(getApplicationContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 
 
 

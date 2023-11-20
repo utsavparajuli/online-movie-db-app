@@ -17,6 +17,8 @@
     <string name="director">Director</string>
     <string name="year">Year</string>
     <string name="title">Title</string>
+    <string name="prev">Prev</string>
+    <string name="next">Next</string>
 
 
 </resources>
