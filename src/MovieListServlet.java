@@ -1,34 +1,28 @@
+import classes.SessionParameters;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import classes.SessionParameters;
 
 
 // Declaring a WebServlet called StarsServlet, which maps to url "/api/movie-list"
 @WebServlet(name = "MovieListServlet", urlPatterns = "/app/api/movie-list")
 public class MovieListServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    // Create a dataSource which registered in web.
+    public static final String genreQuery = "CALL genre_query(?)";
+    public static final  String starsQuery = "CALL stars_query(?)";
     private DataSource dataSource;
 
     public void init(ServletConfig config) {
@@ -40,76 +34,70 @@ public class MovieListServlet extends HttpServlet {
         }
     }
 
-    /*
-   private String getGenreQuery(SessionParameters sessionParameters) {
+   private String getGenreQueryPart(SessionParameters sessionParameters) {
        return ", genres_in_movies gim " +
-               "WHERE m.id = gim.movieId AND m.id = r.movieId AND gim.genreID = ? ";
+               String.format("WHERE m.id = gim.movieId AND m.id = r.movieId AND gim.genreID = %s ",
+                       sessionParameters.movieGenreId);
    }
 
-
-   private String getSearchQuery(SessionParameters sessionParameters) {
-       boolean isFirstSearchParameter = true;
-       String query = "";
-       if (sessionParameters.movieStar != null) {
-           query += ", stars s, stars_in_movies sim " +
-                   "WHERE m.id = sim.movieId AND s.id = sim.starId AND r.movieId = m.id ";
-           query += "AND s.name LIKE '%?%' ";
-           isFirstSearchParameter = false;
-       } else {
-           query += "WHERE m.id = r.movieId ";
-       }
-       if (sessionParameters.movieTitle != null) {
-           query += "AND m.title LIKE '%?%' ";
-           isFirstSearchParameter = false;
-       }
-       if (sessionParameters.movieYear != null) {
-           query +=  "AND m.year = ? ";
-           isFirstSearchParameter = false;
-       }
-       if (sessionParameters.movieDirector != null) {
-           query += "AND m.director LIKE '%?%' ";
-       }
-       return query;
-   }
-
-   private String getTitleStartsWithQuery(SessionParameters sessionParameters) {
-
-       //String query = " WHERE m.id = r.movieId AND title ";
-       //if (sessionParameters.movieFirstChar.equals("none")) {
-       //    query += " WHERE m.id = r.movieId AND title ";
-       //} else {
-       //    query += "LIKE ?% ";
-       //}
-
+   private String getTitleStartsWithQueryPart(SessionParameters sessionParameters) {
         String query = " WHERE m.id = r.movieId AND title ";
-
        if (sessionParameters.movieFirstChar.equals("none")) {
            query += "NOT REGEXP '^[0-9a-zA-Z]' ";
-
        } else {
-           query += "LIKE '?%' ";
+           query += "LIKE '" + sessionParameters.movieFirstChar + "%' ";
        }
        query += "ORDER BY m.title ASC ";
        return query;
    }
 
-   private String getOrderQuery(SessionParameters sessionParameters) {
+   private String getSearchQueryPart(SessionParameters sessionParameters) {
+        boolean isFirstSearchParameter = true;
+        StringBuilder query = new StringBuilder();
+        if (sessionParameters.movieStar != null) {
+            query.append(", stars s, stars_in_movies sim " +
+                    "WHERE m.id = sim.movieId AND s.id = sim.starId AND r.movieId = m.id " +
+                    "AND s.name LIKE '%").append(sessionParameters.movieStar).append("%' ");
+            isFirstSearchParameter = false;
+        } else {
+            query.append("WHERE m.id = r.movieId ");
+        }
+        if (sessionParameters.movieTitle != null) {
+            String[] titleArray = sessionParameters.movieTitle.split("[\\p{IsPunctuation}\\s]+");
+            query.append("AND MATCH (m.title) AGAINST ('");
+            for (String s : titleArray) {
+                query.append("+").append(s).append(" ");
+            }
+            query.append("' IN BOOLEAN MODE) ");
+            isFirstSearchParameter = false;
+        }
+        if (sessionParameters.movieYear != null) {
+            query.append("AND m.year = ")
+                    .append(sessionParameters.movieYear)
+                    .append(" ");
+            isFirstSearchParameter = false;
+        }
+        if (sessionParameters.movieDirector != null) {
+            query.append("AND m.director LIKE '%")
+                    .append(sessionParameters.movieDirector)
+                    .append("%' ");
+        }
+        return query.toString();
+    }
+
+   private String getOrderQueryPart(SessionParameters sessionParameters) {
        String query = "";
        if (sessionParameters.sortOrderFirst == null) {
            query += "ORDER BY rating DESC ";
        } else {
-           //query += "ORDER BY " + sessionParameters.sortOrderFirst + " " +
-           //        sessionParameters.sortDirectionFirst + ", " +
-           //        sessionParameters.sortOrderSecond + " " +
-           //        sessionParameters.sortDirectionSecond + " ";
-           query += String.format("ORDER BY %s %s, %s %s", sessionParameters.sortOrderFirst,
+           query += String.format("ORDER BY %s %s, %s %s ", sessionParameters.sortOrderFirst,
                    sessionParameters.sortDirectionFirst, sessionParameters.sortOrderSecond,
                    sessionParameters.sortDirectionSecond);
        }
        return query;
    }
 
-   private String getLimitQuery(SessionParameters sessionParameters) {
+   private String getLimitQueryPart(SessionParameters sessionParameters) {
        String query = "";
        if (sessionParameters.numResultsPerPage == 25) {
            query += "LIMIT 25 ";
@@ -130,85 +118,22 @@ public class MovieListServlet extends HttpServlet {
        return query;
    }
 
-
-   */
-// Generates a SQL query String
     private String getQueryString(SessionParameters sessionParameters) {
         StringBuilder query = new StringBuilder("SELECT DISTINCT m.id, m.title AS title, m.year, m.director, r.rating AS rating " +
                 "FROM movies m, ratings r ");
 
         if (sessionParameters.movieGenreId != null) {
-            //query += getGenreQuery(sessionParameters);
-            query.append(", genres_in_movies gim " + "WHERE m.id = gim.movieId AND m.id = r.movieId AND gim.genreID = ? ");
+            query.append(getGenreQueryPart(sessionParameters));
 
         } else if (sessionParameters.movieFirstChar != null) {
-            //query += getTitleStartsWithQuery(sessionParameters);
-            query.append(" WHERE m.id = r.movieId AND title ");
-            if (sessionParameters.movieFirstChar.equals("none")) {
-                query.append("NOT REGEXP '^[0-9a-zA-Z]' ");
-
-            } else {
-                query.append("LIKE '").append(sessionParameters.movieFirstChar).append("%' ");
-            }
-            query.append("ORDER BY m.title ASC ");
+            query.append(getTitleStartsWithQueryPart(sessionParameters));
         } else {
-            //query += getSearchQuery(sessionParameters);
-            boolean isFirstSearchParameter = true;
-
-            if (sessionParameters.movieStar != null) {
-                query.append(", stars s, stars_in_movies sim " + "WHERE m.id = sim.movieId AND s.id = sim.starId AND r.movieId = m.id ");
-                query.append("AND s.name LIKE '%").append(sessionParameters.movieStar).append("%' ");
-                isFirstSearchParameter = false;
-            } else {
-                query.append("WHERE m.id = r.movieId ");
-            }
-            if (sessionParameters.movieTitle != null) {
-                String[] titleArray = sessionParameters.movieTitle.split("[\\p{IsPunctuation}\\s]+");
-                query.append("AND MATCH (m.title) AGAINST ('");
-                for (String s : titleArray) {
-                    query.append("+").append(s).append(" ");
-                }
-                query.append("' IN BOOLEAN MODE) ");
-
-                //query += "AND m.title LIKE '%" + sessionParameters.movieTitle + "%' ";
-                isFirstSearchParameter = false;
-            }
-            if (sessionParameters.movieYear != null) {
-                query.append("AND m.year = '").append(sessionParameters.movieYear).append("' ");
-                isFirstSearchParameter = false;
-            }
-            if (sessionParameters.movieDirector != null) {
-                query.append("AND m.director LIKE '%").append(sessionParameters.movieDirector).append("%' ");
-            }
+            query.append(getSearchQueryPart(sessionParameters));
         }
-
-        //query += getOrderQuery(sessionParameters);
-
-        if (sessionParameters.sortOrderFirst == null) {
-            query.append("ORDER BY rating DESC ");
-        } else {
-            query.append("ORDER BY ").append(sessionParameters.sortOrderFirst).append(" ").append(sessionParameters.sortDirectionFirst).append(", ");
-            query.append(sessionParameters.sortOrderSecond).append(" ").append(sessionParameters.sortDirectionSecond).append(" ");
-
+        if (sessionParameters.movieFirstChar == null) {
+            query.append(getOrderQueryPart(sessionParameters));
         }
-        //query += getLimitQuery(sessionParameters);
-
-        if (sessionParameters.numResultsPerPage == 25) {
-            query.append("LIMIT 25 ");
-            if (sessionParameters.offset == 0) {
-                query.append(";");
-            } else {
-                query.append("OFFSET ").append(Integer.toString(25 * sessionParameters.offset + 1)).append(";");
-            }
-        } else {
-            query.append("LIMIT ").append(Integer.toString(sessionParameters.numResultsPerPage)).append(" ");
-            if (sessionParameters.offset == 0) {
-                query.append(";");
-            } else {
-                query.append("OFFSET ").append(Integer.toString(
-                        sessionParameters.numResultsPerPage * sessionParameters.offset + 1)).append(";");
-            }
-        }
+        query.append(getLimitQueryPart(sessionParameters));
         return query.toString();
     }
 
@@ -216,11 +141,8 @@ public class MovieListServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        response.setContentType("application/json"); // Response mime type
-
+        response.setContentType("application/json");
         SessionParameters sessionParameters = new SessionParameters(request);
-
         request.getServletContext().log(sessionParameters.toString());
 
         // Output stream to STDOUT
@@ -231,10 +153,6 @@ public class MovieListServlet extends HttpServlet {
 
             String query = getQueryString(sessionParameters);
             request.getServletContext().log("\n\nSQL query: " + query);
-
-            //String[] title = sessionParameters.movieTitle.split("[\\p{IsPunctuation}\\s]+");
-
-            //request.getServletContext().log(Arrays.toString(title));
 
             // Perform the query
             PreparedStatement statement = conn.prepareStatement(query);
@@ -256,12 +174,6 @@ public class MovieListServlet extends HttpServlet {
                 jsonObject.addProperty("director", resultSet.getString("director"));
                 jsonObject.addProperty("rating", resultSet.getString("rating"));
 
-
-                String genreQuery = "SELECT g.name, g.id " +
-                        "FROM genres g, genres_in_movies gim " +
-                        "WHERE g.id = gim.genreID AND gim.movieId = ? " +
-                        "ORDER BY g.name " +
-                        "LIMIT 3;";
                 PreparedStatement prepStatement = conn.prepareStatement(genreQuery);
                 prepStatement.setString(1, movie_id);
                 ResultSet genreResultSet = prepStatement.executeQuery();
@@ -278,10 +190,7 @@ public class MovieListServlet extends HttpServlet {
                 }
 
                 // Getting the stars for a particular movie
-                String starsQuery = "SELECT S.id, S.name " +
-                        "FROM stars S, stars_in_movies SiM " +
-                        "WHERE S.id = SiM.starId AND SiM.movieId = ? " +
-                        "LIMIT 3;";
+
                 prepStatement = conn.prepareStatement(starsQuery);
                 prepStatement.setString(1, movie_id);
                 ResultSet starsResultSet = prepStatement.executeQuery();
