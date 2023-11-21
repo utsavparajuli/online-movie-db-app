@@ -14,11 +14,13 @@
     <string name="search">Movie Search</string>
     <string name="prompt_movie">Movie Title</string>
     <string name="action_back">Back</string>
-    <string name="director">Director</string>
+    <string name="director">Director </string>
     <string name="year">Year</string>
     <string name="title">Title</string>
     <string name="prev">Prev</string>
     <string name="next">Next</string>
+    <string name="genre">Genre</string>
+    <string name="stars">Stars </string>
 
 
 </resources>

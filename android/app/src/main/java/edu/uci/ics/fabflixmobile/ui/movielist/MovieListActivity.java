@@ -17,6 +17,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.R;
+import edu.uci.ics.fabflixmobile.data.CustomJSONParser;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.data.model.Genre;
 import edu.uci.ics.fabflixmobile.data.model.Movie;
@@ -25,6 +26,7 @@ import edu.uci.ics.fabflixmobile.databinding.ActivityMainpageBinding;
 import edu.uci.ics.fabflixmobile.databinding.ActivityMovielistBinding;
 import edu.uci.ics.fabflixmobile.ui.login.LoginActivity;
 import edu.uci.ics.fabflixmobile.ui.mainpage.MainPageActivity;
+import edu.uci.ics.fabflixmobile.ui.singlemovie.SingleMovieActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -88,7 +90,7 @@ public class MovieListActivity extends AppCompatActivity {
 
         fetchMovies(currentPage);
 
-//        getMovies(movie_title, currentPage, new MovieCallback() {
+//        getMovies(movie_title, currentPage, new SingleMovieCallback() {
 //            @Override
 //            public void onMoviesReceived(ArrayList<Movie> movies) {
 //                MovieListViewAdapter adapter = new MovieListViewAdapter(MovieListActivity.this, movies);
@@ -107,6 +109,20 @@ public class MovieListActivity extends AppCompatActivity {
 //                Toast.makeText(getApplicationContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
 //            }
 //        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        // Customize the behavior of the back button
+        // For example, you can navigate to a specific activity:
+        Intent intent = new Intent(MovieListActivity.this, MainPageActivity.class);
+        startActivity(intent);
+
+        // Or perform any other action...
+
+        // Don't forget to call super.onBackPressed() if you still want
+        // the default behavior of finishing the current activity.
+        super.onBackPressed();
     }
 
 
@@ -130,7 +146,7 @@ public class MovieListActivity extends AppCompatActivity {
                 response -> {
                     Log.d("search.response", response);
 
-                    ArrayList<Movie> movies = MovieParser.parseJson(response);
+                    ArrayList<Movie> movies = CustomJSONParser.parseJson(response);
                     callback.onMoviesReceived(movies);
                 },
                 error -> {
@@ -170,6 +186,13 @@ public class MovieListActivity extends AppCompatActivity {
                     Movie movie = movies.get(position);
                     @SuppressLint("DefaultLocale") String message = String.format("Clicked on position: %d, name: %s, %d", position, movie.getName(), movie.getYear());
                     Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+
+                    // initialize the activity(page)/destination
+                    Intent MovieListPage = new Intent(MovieListActivity.this, SingleMovieActivity.class);
+                    MovieListPage.putExtra("movie_id", movie.getId());
+                    // activate the list page.
+                    startActivity(MovieListPage);
+
                 });
                 pageNumber.setText(String.valueOf(currentPage));
 
@@ -184,70 +207,5 @@ public class MovieListActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-
-
-
-    public static class MovieParser {
-        public static ArrayList<Movie> parseJson(String jsonResponse) {
-            ArrayList<Movie> movieList = new ArrayList<>();
-
-            try {
-                JSONArray jsonArray = new JSONArray(jsonResponse);
-
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonMovie = jsonArray.getJSONObject(i);
-
-                    String movieId = jsonMovie.getString("movie_id");
-                    String movieTitle = jsonMovie.getString("movie_title");
-                    String year = jsonMovie.getString("year");
-                    String director = jsonMovie.getString("director");
-                    String rating = jsonMovie.getString("rating");
-
-                    // Parse stars array
-                    JSONObject starsArray = jsonMovie.getJSONObject("stars");
-                    List<Star> stars = parseStars(starsArray);
-
-                    // Parse genres array
-                    JSONObject genresArray = jsonMovie.getJSONObject("genres");
-                    List<Genre> genres = parseGenres(genresArray);
-
-                    // Create Movie object and add to the list
-                    Movie movie = new Movie(movieId, movieTitle, Short.parseShort(year), director, rating, genres, stars);
-                    movieList.add(movie);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            return movieList;
-        }
-
-        private static List<Star> parseStars(JSONObject starsObject) throws JSONException {
-            List<Star> stars = new ArrayList<>();
-
-            for (int j = 0; j < starsObject.length(); j++) {
-                JSONObject jsonStar = starsObject.getJSONObject(String.valueOf(j));
-                String starId = jsonStar.getString("id");
-                String starName = jsonStar.getString("name");
-                stars.add(new Star(starId, starName));
-            }
-
-            return stars;
-        }
-
-        private static List<Genre> parseGenres(JSONObject genresObject) throws JSONException {
-            List<Genre> genres = new ArrayList<>();
-
-            for (int k = 0; k < genresObject.length(); k++) {
-                JSONObject jsonGenre = genresObject.getJSONObject(String.valueOf(k));
-                String genreId = jsonGenre.getString("id");
-                String genreName = jsonGenre.getString("name");
-                genres.add(new Genre(genreId, genreName));
-            }
-
-            return genres;
-        }
     }
 }
