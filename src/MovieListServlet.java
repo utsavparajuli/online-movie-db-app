@@ -66,7 +66,7 @@ public class MovieListServlet extends HttpServlet {
             String[] titleArray = sessionParameters.movieTitle.split("[\\p{IsPunctuation}\\s]+");
             query.append("AND MATCH (m.title) AGAINST ('");
             for (String s : titleArray) {
-                query.append("+").append(s).append(" ");
+                query.append("+").append(s).append("* ");
             }
             query.append("' IN BOOLEAN MODE) ");
             isFirstSearchParameter = false;
