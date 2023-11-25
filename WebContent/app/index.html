@@ -1,29 +1,15 @@
-<!-- This example is following frontend and backend separation.
-
-    This .html performs two steps:
-    1. Create a html template skeleton, with all the elements defined (some left empty) and named with ids.
-    2. Load index.js to populate the data into empty elements.
-    -->
-
 <!doctype html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport"
           content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-
-
-    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-
     <link rel="stylesheet" href="../style.css" type="text/css">
-
 
     <title>Fabflix</title>
     <link rel="icon" href="../img/favicon.ico" />
@@ -57,27 +43,29 @@
     <span></span>
     <hr>
 
+
     <h2 class="text-center">Advanced Search</h2>
+    <span></span>
 
     <div class="align-items-center justify-content-center">
 
-        <form method="get" action="#">
-
+        <form class="form-inline" method="get" action="#">
             <div class="form-group">
-                <label><b>Title</b></label>
+                <label for="movie_title"><b>Title</b></label>
                 <input class="form-control" id="movie_title" placeholder="Movie Title" type="text">
             </div>
             <div class="form-group">
-                <label><b>Year</b></label>
-                    <input class="form-control" id="movie_year" placeholder="Release Year" type="number" maxlength="4" minlength="4">
+                <label for="movie_year"><b>Year</b></label>
+                <input class="form-control" id="movie_year" placeholder="Release Year" type="number"
+                       maxlength="4" minlength="4">
             </div>
             <div class="form-group">
-                <label><b>Director</b></label>
-                    <input class="form-control" id="movie_director" placeholder="Director Name" type="text" >
+                <label for="movie_director"><b>Director</b></label>
+                <input class="form-control" id="movie_director" placeholder="Director Name" type="text" >
             </div>
             <div class="form-group">
-                <label><b>Star</b></label>
-                    <input class="form-control" id="movie_star" placeholder="Star Name" type="text" >
+                <label for="movie_star"><b>Star</b></label>
+                <input class="form-control" id="movie_star" placeholder="Star Name" type="text" >
             </div>
             <input type="button" class="btn btn-default" value="Search" onclick="submitSearch()">
         </form>
@@ -90,10 +78,24 @@
 
     <!--                                SEARCH COMPONENT   END                 -->
 
+    <h2 class="text-center">Title Search</h2>
+    <div class="search-box">
+            <label for="autocomplete"><b>Title</b></label>
+            <input class="form-control" id="autocomplete" placeholder="Movie Title" type="text">
+            <input type="button" class="btn btn-default" value="Search"
+                   onclick="submitTitleSearch(document.getElementById('autocomplete').value.toString())">
+    </div>
+
+
+
+    <br>
+    <span></span>
+    <hr>
+
     <!--
                                   BROWSE COMPONENT   BEGIN - ALPHABETICAL                 -->
     <div>
-        <h2 class="text-center">BROWSE - ALPHABETICAL</h2>
+        <h2 class="text-center">Browse - Alphabetical</h2>
 
         <div class="grid-container" id="alphabetical_list"></div>
     </div>
@@ -103,36 +105,22 @@
     <span></span>
     <hr>
 
-
-
-
-    <h2 class="text-center">BROWSE - GENRE</h2>
-    <!-- ID "star_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
+    <h2 class="text-center">Browse - Genre</h2>
     <table id=genre_table class="table table-striped align-content-center align-items-center">
-        <!-- Create a table header -->
         <thead>
         <tr>
-            <!-- Titles of each column-->
             <th>Genre</th>
         </tr>
         </thead>
-        <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
-        <!-- Again, id "star_table_body" is useful for jQuery to find this html element -->
         <tbody id=genre_list_table_body></tbody>
     </table>
     <br>
     <br>
 
-
-    <!-- Load jQuery and Bootstrap JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-
-    <!-- Load our own JS file -->
-    <!-- The path is relative to index.html, since these two files are in the same directory -->
-    <!-- Note the url does not contain a "/" in the beginning, which means the url is relative to current path
-         otherwise the url is relative to the root path-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.11/jquery.autocomplete.min.js"></script>
     <script src="index.js"></script>
 </body>
 

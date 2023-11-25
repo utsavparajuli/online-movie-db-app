@@ -107,11 +107,13 @@ function handleResult(resultData) {
 
 
 function goBackToSessionPage() {
-    if (sessionStorage.getItem("prevPage") !== null) {
+    if (sessionStorage.getItem("backToHome") !== null) {
+        sessionStorage.removeItem("backToHome");
+        window.location.href = "index.html"
+    } else if (sessionStorage.getItem("prevPage") !== null) {
         sessionStorage.removeItem("prevPage");
         window.location.href = "top-20-rated.html";
-    }
-    else {
+    } else {
         sessionStorage.setItem("backCheck", "yes");
         window.location.href = "movie-list.html?" + sessionStorage.getItem("baseUrl");
     }

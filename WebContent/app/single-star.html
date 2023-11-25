@@ -43,11 +43,15 @@
 </div>
 
 <!-- H3 body is left empty here, will be populated with the data retrieved with single-star.js -->
-<!-- single-star.js will find this html element by it's id "star_info" -->
+<!-- single-star.js will find this html element by its id "star_info" -->
 
 <h3 align="center" id="star_info"></h3>
  <br>
-<input type="button"  class="btn btn-default" value="back" onclick="goBackToSessionPage()">
+<div class="back-button-div">
+    <input type="button"  class="btn btn-default" value="Back" onclick="goBackToSessionPage()">
+</div>
+<br>
+
 <table id=movie_table class="table table-striped">
     <thead>
     <tr>

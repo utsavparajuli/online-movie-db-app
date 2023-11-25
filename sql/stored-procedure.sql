@@ -1,4 +1,5 @@
 USE moviedb;
+
 DROP PROCEDURE IF EXISTS set_genre;
 DELIMITER //
 CREATE PROCEDURE set_genre (IN genre VARCHAR(32), IN movieId VARCHAR(10))
@@ -68,8 +69,31 @@ END
 //
 DELIMITER ;
 
+DROP PROCEDURE IF EXISTS get_table_metadata;
 CREATE PROCEDURE get_table_metadata ()
     SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE
     FROM INFORMATION_SCHEMA.COLUMNS
     WHERE table_schema = 'moviedb'
     ORDER BY table_name ASC;
+
+DROP PROCEDURE IF EXISTS genre_query;
+CREATE PROCEDURE genre_query (IN genreMovieId VARCHAR(10))
+    SELECT g.name, g.id
+    FROM genres g, genres_in_movies gim
+    WHERE g.id = gim.genreID AND gim.movieId = genreMovieId
+    ORDER BY g.name
+    LIMIT 3;
+
+DROP PROCEDURE IF EXISTS stars_query;
+CREATE PROCEDURE stars_query (IN starMovieId VARCHAR(10))
+    SELECT S.id, S.name
+    FROM stars S, stars_in_movies SiM
+    WHERE S.id = SiM.starId AND SiM.movieId = starMovieId
+    LIMIT 3;
+
+DROP PROCEDURE IF EXISTS movie_title_id_query;
+CREATE PROCEDURE  movie_title_id_query(IN titleName VARCHAR(100))
+    SELECT title, id
+    FROM movies
+    WHERE MATCH (title) AGAINST (titleName IN BOOLEAN MODE)
+    LIMIT 10;

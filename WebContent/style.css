@@ -257,3 +257,61 @@ body .column {
     align-items: center;
 }
 
+.form-inline {
+    text-align: center;
+    justify-content: center;
+    font-family: Roboto, sans-serif;
+}
+
+.form-inline label {
+    font-family: Roboto, sans-serif;
+    font-weight: 300;
+    margin: 5px 5px 5px;
+    font-size: 1.3em;
+}
+
+.form-inline input {
+    font-family: Roboto, sans-serif;
+    font-weight: 300;
+    margin-right: 15px;
+}
+
+.search-box .btn {
+    margin-left: 10px;
+}
+
+.h2 {
+    font-family: Roboto, sans-serif;
+    font-weight: 400;
+}
+
+.back-button-div {
+    margin-left: 10%;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: Roboto, sans-serif;
+}
+
+.search-box input {
+    font-weight: 300;
+    max-width: 300px;
+}
+
+.search-box label {
+    margin: 5px 5px 5px;
+    font-size: 1.3em;
+    font-weight: 300;
+}
+
+.autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; cursor: pointer }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; }
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: normal; color: rgb(248, 161, 69); }
+.autocomplete-group { padding: 2px 5px; }
+.autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+
