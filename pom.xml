@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>edu.uci.ics</groupId>
-    <artifactId>cs122b-project3</artifactId>
+    <artifactId>cs122b-project4</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <dependencies>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20090211</version>
+            <version>20230227</version>
         </dependency>
         <dependency>
             <groupId>org.jasypt</groupId>
