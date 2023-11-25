@@ -1,28 +1,29 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
 
-// Declaring a WebServlet called StarsServlet, which maps to url "/api/movielist"
 @WebServlet(name = "MainPageServlet", urlPatterns = "/app/api/mainpage")
 public class MainPageServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
-    // Create a dataSource which registered in web.
+    //private static final String movieTitleIdQuery = "CALL movie_title_id_query(?)";
+    private static final String movieTitleIdQuery = "CALL movie_title_id_query(?)";
+    private static final String genreQuery = "SELECT G.id, G.name " +
+                                                "FROM genres G " +
+                                                "ORDER BY G.name ASC; ";
     private DataSource dataSource;
 
     public void init(ServletConfig config) {
@@ -33,68 +34,85 @@ public class MainPageServlet extends HttpServlet {
         }
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-
-        response.setContentType("application/json"); // Response mime type
-
-        // Output stream to STDOUT
+        if (request.getParameter("autocomplete") != null) {
+            titleId(request, response);
+            return;
+        }
+        response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-
-        // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
-
-            // Declare our statement
-//            Statement statement = conn.createStatement();
-
-            // Query that selects the top 20 movies by rating
-            String query = "SELECT G.id, G.name " +
-                    "FROM genres G " +
-                    "ORDER BY G.name ASC; ";
-
-            PreparedStatement statement = conn.prepareStatement(query);
-            // Perform the query
+            PreparedStatement statement = conn.prepareStatement(genreQuery);
             ResultSet resultSet  = statement.executeQuery();
-
             JsonArray jsonArray = new JsonArray();
-
-            // Iterate through each row of resultSet
             while (resultSet.next()) {
-                // Create a JsonObject based on the data we retrieve from resultSet
                 JsonObject jsonObject = new JsonObject();
-
                 jsonObject.addProperty("genre_id", resultSet.getString("id"));
                 jsonObject.addProperty("genre_name", resultSet.getString("name"));
-
                 jsonArray.add(jsonObject);
             }
-
             resultSet.close();
             statement.close();
-
-            // Log to localhost log
             request.getServletContext().log("getting " + jsonArray.size() + " results");
-
-            // Write JSON string to output
             out.write(jsonArray.toString());
-            // Set response status to 200 (OK)
             response.setStatus(200);
-
         } catch (Exception e) {
-
-            // Write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("errorMessage", e.getMessage());
             out.write(jsonObject.toString());
-
-            // Set response status to 500 (Internal Server Error)
             response.setStatus(500);
         } finally {
             out.close();
         }
+    }
+    protected void titleId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        PrintWriter out = response.getWriter();
+        String movieTitle = request.getParameter("autocomplete");
+        JsonArray titleResultArray = new JsonArray();
+        if (movieTitle == null || movieTitle.trim().isEmpty()) {
+            response.getWriter().write(titleResultArray.toString());
+            return;
+        }
+        try (Connection conn = dataSource.getConnection()) {
+            String[] titleArray = request.getParameter("autocomplete")
+                    .split("[\\p{IsPunctuation}\\s]+");
+            StringBuilder titleQuery = new StringBuilder();;
+            for (String s : titleArray) {
+                titleQuery.append("+").append(s).append("* ");
+            }
+            PreparedStatement titleQueryStatement = conn.prepareStatement(movieTitleIdQuery);
+            titleQueryStatement.setString(1, titleQuery.toString());
+            request.getServletContext().log(titleQueryStatement.toString());
+            ResultSet titleResultSet = titleQueryStatement.executeQuery();
+            while (titleResultSet.next()) {
+                titleResultArray.add(generateJsonObject(
+                        titleResultSet.getString("id"),
+                        titleResultSet.getString("title")));
+            }
+            request.getServletContext().log("4");
+            titleResultSet.close();
+            titleQueryStatement.close();
+            out.write(titleResultArray.toString());
+            response.setStatus(200);
+        }  catch (Exception e) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("errorMessage", e.getMessage());
+            out.write(jsonObject.toString());
+            response.setStatus(500);
+        } finally {
+            out.close();
+        }
+    }
 
-        // Always remember to close db connection after usage. Here it's done by try-with-resources
+    private static JsonObject generateJsonObject(String movieID, String movieTitle) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("value", movieTitle);
+
+        JsonObject additionalDataJsonObject = new JsonObject();
+        additionalDataJsonObject.addProperty("movieID", movieID);
+
+        jsonObject.add("data", additionalDataJsonObject);
+        return jsonObject;
     }
 }
+
