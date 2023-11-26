@@ -52,7 +52,7 @@ public class MovieListActivity extends AppCompatActivity {
     private final String host = "13.52.42.148";
 
     private final String port = "8443";
-    private final String domain = "cs122b_project4_war";
+    private final String domain = "cs122b-project4";
     private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
     private TextView pageNumber;
