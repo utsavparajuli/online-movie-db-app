@@ -141,8 +141,9 @@ public class MovieListActivity extends AppCompatActivity {
 
         // request type is POST
         final StringRequest searchRequest = new StringRequest(
-                Request.Method.POST,
-                baseURL + "/app/api/movie-list",
+                Request.Method.GET,
+                baseURL + "/app/api/movie-list?movie_title=" + movieTitle + "&offset=" + (currentPage - 1)
+                + "&num_results=" + PAGE_SIZE,
                 response -> {
                     Log.d("search.response", response);
 
@@ -153,16 +154,16 @@ public class MovieListActivity extends AppCompatActivity {
                     Log.d("search.error", error.toString());
                     callback.onError(error.toString());
                 }) {
-            @Override
-            protected Map<String, String> getParams() {
-                // POST request form data
-                final Map<String, String> params = new HashMap<>();
-                params.put("movie_title", movieTitle);
-                params.put("offset", String.valueOf(currentPage - 1));
-                params.put("num_results", String.valueOf(PAGE_SIZE));
-
-                return params;
-            }
+//            @Override
+//            protected Map<String, String> getParams() {
+//                // POST request form data
+//                final Map<String, String> params = new HashMap<>();
+//                params.put("movie_title", movieTitle);
+//                params.put("offset", String.valueOf(currentPage - 1));
+//                params.put("num_results", String.valueOf(PAGE_SIZE));
+//
+//                return params;
+//            }
         };
 
         // important: queue.add is where the login request is actually sent
