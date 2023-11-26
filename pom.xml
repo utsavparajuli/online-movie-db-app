@@ -34,7 +34,7 @@
         </dependency>
     </dependencies>
     <build>
-        <finalName>cs122b-project3</finalName>
+        <finalName>cs122b-project4</finalName>
         <sourceDirectory>src</sourceDirectory>
         <plugins>
             <plugin>
