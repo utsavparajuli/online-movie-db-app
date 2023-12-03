@@ -95,9 +95,9 @@ cmake-build-debug/
 # IntelliJ
 /out/
 
-/stanford-movies/
+#/stanford-movies/
 
-stanford-movies/
+#stanford-movies/
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
