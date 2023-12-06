@@ -23,7 +23,7 @@
               type="javax.sql.DataSource"
               username="mytestuser"
               password="My6$Password"
-              url="jdbc:mysql://172.31.2.39:3306/moviedb?
+              url="jdbc:mysql://13.52.218.41:3306/moviedb?
               autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;cachePrepStmts=true"/>
 
     <!-- Defines a Data Source Connecting to localhost moviedb-->
@@ -35,6 +35,6 @@
               type="javax.sql.DataSource"
               username="mytestuser"
               password="My6$Password"
-              url="jdbc:mysql://172.31.24.214:3306/moviedb?
+              url="jdbc:mysql://54.215.104.225:3306/moviedb?
               autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;cachePrepStmts=true"/>
 </Context>
