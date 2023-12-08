@@ -29,14 +29,14 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
-    <filter-mapping>
-        <filter-name>LoginFilter</filter-name>
-        <url-pattern>/app/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>EmployeeLoginFilter</filter-name>
-        <url-pattern>/_dashboard/*</url-pattern>
-    </filter-mapping>
+<!--    <filter-mapping>-->
+<!--        <filter-name>LoginFilter</filter-name>-->
+<!--        <url-pattern>/app/*</url-pattern>-->
+<!--    </filter-mapping>-->
+<!--    <filter-mapping>-->
+<!--        <filter-name>EmployeeLoginFilter</filter-name>-->
+<!--        <url-pattern>/_dashboard/*</url-pattern>-->
+<!--    </filter-mapping>-->
 
     <!--
     <security-constraint>
