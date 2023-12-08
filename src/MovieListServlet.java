@@ -162,17 +162,31 @@ public class MovieListServlet extends HttpServlet {
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
-        // Time an event in a program to nanosecond precision
-        long tjStartTime = System.nanoTime();
+
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
 
             String query = getQueryString(sessionParameters);
             request.getServletContext().log("\n\nSQL query: " + query);
 
-            // Perform the query
-            PreparedStatement statement = conn.prepareStatement(query);
-            ResultSet resultSet  = statement.executeQuery();
+            ResultSet resultSet;
+            PreparedStatement statement;
+
+
+            try (FileWriter localWriter = new FileWriter(myfile, true)) {
+                // Perform the query
+                statement = conn.prepareStatement(query);
+                // Time an event in a program to nanosecond precision
+                long tjStartTime = System.nanoTime();
+
+                resultSet  = statement.executeQuery();
+
+                long tjEndTime = System.nanoTime();
+                long tjElapsedTime = tjEndTime - tjStartTime; // elapsed time in nanoseconds. Note: print the values in nanoseconds
+
+                localWriter.write("TJ: " + tjElapsedTime + " ns\n");
+            }
+
 
             JsonArray jsonArray = new JsonArray();
 
@@ -242,11 +256,7 @@ public class MovieListServlet extends HttpServlet {
             out.write(jsonArray.toString());
             // Set response status to 200 (OK)
             response.setStatus(200);
-            long tjEndTime = System.nanoTime();
-            long tjElapsedTime = tjEndTime - tjStartTime; // elapsed time in nanoseconds. Note: print the values in nanoseconds
 
-            writer.write("TJ: " + tjElapsedTime + " ns\n");
-            writer.close();
         } catch (Exception e) {
 
             // Write error message JSON object to output

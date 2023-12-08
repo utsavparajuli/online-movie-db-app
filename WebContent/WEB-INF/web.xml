@@ -29,7 +29,16 @@
         <res-auth>Container</res-auth>
     </resource-ref>
 
-<!--    <filter-mapping>-->
+    <filter>
+        <filter-name>SearchFilter</filter-name>
+        <filter-class>SearchFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SearchFilter</filter-name>
+        <url-pattern>/app/api/movie-list</url-pattern>
+    </filter-mapping>
+
+    <!--    <filter-mapping>-->
 <!--        <filter-name>LoginFilter</filter-name>-->
 <!--        <url-pattern>/app/*</url-pattern>-->
 <!--    </filter-mapping>-->
