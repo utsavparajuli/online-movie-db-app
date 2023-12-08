@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -24,13 +26,23 @@ public class MovieListServlet extends HttpServlet {
     public static final String genreQuery = "CALL genre_query(?)";
     public static final  String starsQuery = "CALL stars_query(?)";
     private DataSource dataSource;
+    FileWriter writer;
+    File myfile;
 
     public void init(ServletConfig config) {
         //this.nameAttribute = new SessionAttribute<>(String.class, "name");
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/slavemoviedb");
+
+            String contextPath = config.getServletContext().getRealPath("/");
+            String xmlFilePath=contextPath+"\\tjMeasurement";
+            System.out.println(xmlFilePath);
+            myfile = new File(xmlFilePath);
+            myfile.createNewFile();
         } catch (NamingException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -141,6 +153,8 @@ public class MovieListServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        writer = new FileWriter(myfile, true);
+
         response.setContentType("application/json");
         SessionParameters sessionParameters = new SessionParameters(request);
         request.getServletContext().log(sessionParameters.toString());
@@ -148,6 +162,8 @@ public class MovieListServlet extends HttpServlet {
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
+        // Time an event in a program to nanosecond precision
+        long tjStartTime = System.nanoTime();
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
 
@@ -226,7 +242,11 @@ public class MovieListServlet extends HttpServlet {
             out.write(jsonArray.toString());
             // Set response status to 200 (OK)
             response.setStatus(200);
+            long tjEndTime = System.nanoTime();
+            long tjElapsedTime = tjEndTime - tjStartTime; // elapsed time in nanoseconds. Note: print the values in nanoseconds
 
+            writer.write("TJ: " + tjElapsedTime + " ns\n");
+            writer.close();
         } catch (Exception e) {
 
             // Write error message JSON object to output
@@ -241,6 +261,7 @@ public class MovieListServlet extends HttpServlet {
             response.setStatus(500);
         } finally {
             out.close();
+            writer.close();
         }
 
         // Always remember to close db connection after usage. Here it's done by try-with-resources

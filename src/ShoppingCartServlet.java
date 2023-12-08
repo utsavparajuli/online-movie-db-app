@@ -58,7 +58,9 @@ public class ShoppingCartServlet extends HttpServlet {
 
 
         //to build a new cart everytime
-        user.clearCart();
+        if(user != null) {
+            user.clearCart();
+        }
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
