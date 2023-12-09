@@ -35,8 +35,8 @@ public class MovieListServlet extends HttpServlet {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/slavemoviedb");
 
             String contextPath = config.getServletContext().getRealPath("/");
-            String xmlFilePath=contextPath+"\\tjMeasurement";
-            System.out.println(xmlFilePath);
+            String xmlFilePath="/home/logs/tjMeasurement.txt";
+            config.getServletContext().log(xmlFilePath);
             myfile = new File(xmlFilePath);
             myfile.createNewFile();
         } catch (NamingException e) {

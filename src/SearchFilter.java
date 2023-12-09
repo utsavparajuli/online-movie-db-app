@@ -57,7 +57,7 @@ public class SearchFilter implements Filter {
         allowedURIs.add("img/");
 
         String contextPath = fConfig.getServletContext().getRealPath("/");
-        String xmlFilePath=contextPath+"\\tsMeasurement";
+        String xmlFilePath="/home/logs/tsMeasurement.txt";
         System.out.println(xmlFilePath);
         myfile = new File(xmlFilePath);
         try {
