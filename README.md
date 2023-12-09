@@ -52,13 +52,15 @@
 
 | **Single-instance Version Test Plan**          | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
-| Case 1: HTTP/1 thread                          | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
-| Case 3: HTTPS/10 threads                       | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+| Case 1: HTTP/1 thread                          | ![](path to image in img/)   | 132                        | 57                                  | 114                       | ??           |
+| Case 2: HTTP/10 threads                        | ![](path to image in img/)   | 388                        | 200                                 | 369                       | ??           |
+| Case 3: HTTPS/10 threads                       | ![](path to image in img/)   | 395                        | 283                                 | 375                       | ??           |
 | Case 4: HTTP/10 threads/No connection pooling  | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
 
-| **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
-|------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
-| Case 1: HTTP/1 thread                          | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
-| Case 2: HTTP/10 threads                        | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
-| Case 3: HTTP/10 threads/No connection pooling  | ![](path to image in img/)   | ??                         | ??                                  | ??                        | ??           |
+
+                                                                                                                            TJ                                TS
+| **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms) ** | **Average JDBC Time(ms)** | **Analysis** |
+|------------------------------------------------|------------------------------|----------------------------|--------------------------------------|---------------------------|--------------|
+| Case 1: HTTP/1 thread                          | ![](path to image in img/)   | 141                        | 57                                   | 122                       | ??           |
+| Case 2: HTTP/10 threads                        | ![](path to image in img/)   | 527                        | 379                                  | 508                       | ??           |
+| Case 3: HTTP/10 threads/No connection pooling  | ![](path to image in img/)   | ??                         |                                      |                           | ??           |
