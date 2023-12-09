@@ -30,11 +30,9 @@ public class MovieListServlet extends HttpServlet {
     File myfile;
 
     public void init(ServletConfig config) {
-        //this.nameAttribute = new SessionAttribute<>(String.class, "name");
         try {
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/slavemoviedb");
 
-            String contextPath = config.getServletContext().getRealPath("/");
             String xmlFilePath="/home/logs/tjMeasurement.txt";
             config.getServletContext().log(xmlFilePath);
             myfile = new File(xmlFilePath);
@@ -157,17 +155,17 @@ public class MovieListServlet extends HttpServlet {
 
         response.setContentType("application/json");
         SessionParameters sessionParameters = new SessionParameters(request);
-        request.getServletContext().log(sessionParameters.toString());
-
-        // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
+        // no connection pooling - local
+        // try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb" ,"mytestuser", "My6$Password")) {
 
-        // Get a connection from dataSource and let resource manager close the connection after usage.
+        // no connection pooling - slave instance
+        // try (Connection conn = DriverManager.getConnection("jdbc:mysql://184.169.146.237:3306/moviedb" ,"mytestuser", "My6$Password")) {
+
         try (Connection conn = dataSource.getConnection()) {
 
             String query = getQueryString(sessionParameters);
-            request.getServletContext().log("\n\nSQL query: " + query);
 
             ResultSet resultSet;
             PreparedStatement statement;
