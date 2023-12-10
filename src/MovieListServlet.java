@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.DriverManager;
 
 
 // Declaring a WebServlet called StarsServlet, which maps to url "/api/movie-list"
@@ -152,16 +153,9 @@ public class MovieListServlet extends HttpServlet {
      */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         writer = new FileWriter(myfile, true);
-
         response.setContentType("application/json");
         SessionParameters sessionParameters = new SessionParameters(request);
         PrintWriter out = response.getWriter();
-
-        // no connection pooling - local
-        // try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/moviedb" ,"mytestuser", "My6$Password")) {
-
-        // no connection pooling - slave instance
-        // try (Connection conn = DriverManager.getConnection("jdbc:mysql://184.169.146.237:3306/moviedb" ,"mytestuser", "My6$Password")) {
 
         try (Connection conn = dataSource.getConnection()) {
 
