@@ -182,7 +182,6 @@ buildNumber.properties
 # idea files
 .idea/
 out/
-logs/
 
 
 # Avoid ignoring Maven wrapper jar file (.jar files are usually ignored)
