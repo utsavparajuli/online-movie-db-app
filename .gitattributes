@@ -1,0 +1,4 @@
+# .gitattributes
+*.sql linguist-language=PLpgSQL
+*.java linguist-language=Java
+*.js linguist-language=JavaScript
